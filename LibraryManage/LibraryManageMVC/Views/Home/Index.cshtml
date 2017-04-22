@@ -1,0 +1,92 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model LibraryModel.Book.BookModel
+<link href="~/CSS/IndexCSS.css" rel="stylesheet" />
+
+<br />
+<div>
+    <input id="SelfFind" class="layui-btn layui-btn-normal" value="自己去搜索" />
+</div>
+<br />
+<br/>
+<div id="indexcontain">
+    <div id="typeRank">
+        <label>类型排行榜</label>
+        <table id="typetable" class="layui-table" >
+           @Html.Typetable();
+        </table>
+    </div>
+    <div id="booktypeRank">
+        <label >各类排行榜</label>
+        <table id="booktypetable"  class="layui-table" lay-even="" lay-skin="row">
+
+        </table>
+    </div>
+    <div id="bookRank">
+        <label>总排行榜</label>
+        <table id="booktable" class="layui-table" lay-skin="line" >
+            @Html.SelectBookTable()
+        </table>
+    </div>
+    <div id="Recommend">
+        <label>站长推荐</label>
+        <table id="Recommendtable"> 
+        </table>
+    </div>
+</div>
+<div id="asas"></div>
+<script>
+    $(function () {
+        $(".typerangname").click(function () {
+            var typerangid = $(this).attr("myid");
+            window.open("/BookInfo/TypeBooks?booktypeid=" + typerangid);
+        });
+        function RangBook(Firstlist,Secondlist,Thirdlist) {
+            var str = "";
+            for (var i = 1; i <= 10;i++){
+                str = str + "<tr><td>" + i + "</td><td><a class='bookclassa' myid='" + Firstlist[i - 1].BBookID + "'>" + Firstlist[i - 1].BName;
+                str = str + "</a></td>";
+                str = str + "<td><a class='bookclassa' myid='" + Secondlist[i - 1].BBookID + "'>" + Secondlist[i - 1].BName;
+                str = str + "</a></td>";
+                str = str + "<td><a class='bookclassa' myid='" + Thirdlist[i - 1].BBookID + "'>" + Thirdlist[i - 1].BName;
+                str = str + "</a></td></tr>";
+            }
+            return str;
+        }
+       
+        $.post(
+            "/Home/SelectBookRang",
+            {
+                typenameid1: $("#typenameid1").attr("myid"),
+                typenameid2: $("#typenameid2").attr("myid"),
+                typenameid3: $("#typenameid3").attr("myid")
+            },
+            function (Data) {
+                if (Data != null) {
+                    if (Data.Firstlist != null && Data.Secondlist != null && Data.Thirdlist != null) {
+                        var str = RangBook(Data.Firstlist, Data.Secondlist, Data.Thirdlist);
+                        $("#booktypetable").html(str);
+                    } else {
+                        alert("查取数据失败！");
+                    }
+                }
+            });
+       
+    });
+    
+    $(document).on("click", ".bookclassa", function () {
+        bookid = $(this).attr("myid");
+        $.post("/BookInfo/UpdateVisisNum", { bookid: bookid }, function (data) {
+            if (data.IsSuccess) {
+
+            }
+        });
+        window.open("/BookInfo/BookDetail?bookid=" + bookid);
+    });
+    $(document).on("click", "#SelfFind", function () {
+        window.open("/BookInfo/FindBook");
+    });
+    
+</script>

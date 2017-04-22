@@ -1,0 +1,147 @@
+﻿
+@{
+    ViewBag.Title = "Register";
+}
+<style>
+    #Register {
+        width: 80%;
+        margin-left: 10%;
+        text-align: center;
+    }
+    .row{
+        margin-top:20px;
+    }
+    #btndiv{
+         margin-top:20px;
+    }
+    #tologin{
+        margin-left:30px;
+    }
+</style>
+
+<div id="Register">
+    <input id="usertype" name="usertype" type="text" v-model="usertype" >
+    @if (ViewBag.usertype == 1)
+    {
+        <h2>注册</h2>
+    }
+    else if (ViewBag.usertype == 3)
+    {
+        <h2>管理员增加</h2>
+    }
+
+    <hr />
+    <div class="row">
+        <div class="col-xs-3">
+            <label for="username">用户名称：</label>
+            <input type="text" name="username" id="username" placeholder="请输入用户名称" v-model="username">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-3">
+            <label for="account">手机号码：</label>
+            <input type="text" name="account" id="account" placeholder="请输入手机号码" v-model="useraccount">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-3">
+            <label for="pwd">用户密码：</label>
+            <input type="text" name="pwd" id="pwd" placeholder="请输入密码" v-model="pwd">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-3">
+            <label for="usersex">用户性别：</label>
+            <select v-model="selected">
+                <option v-for="option in options" v-bind:value="option.value">
+                    {{ option.text }}
+                </option>
+            </select>
+            <span>Selected: {{ selected }}</span>
+        </div>
+    </div>
+    <div id="btndiv">
+        @if (ViewBag.usertype == 1)
+        {
+            <button class="btn" type="button" v-on:click="addData">注册</button>
+            <a id="tologin" href="/Login/Login">去登录</a>
+        }
+        else if (ViewBag.usertype == 3)
+        {
+            <button class="btn" type="button" v-on:click="addData" value="增加">增加</button>
+        }
+    </div>
+
+</div>
+
+
+
+
+
+<script src="~/Scripts/vue.js"></script>
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+<script>
+
+
+    new Vue({
+        el: '#Register',
+        data: {
+            usertype: @ViewBag.usertype,
+            username:"",
+            useraccount: "",
+            pwd: "",
+            selected: '-1',
+            options: [
+              { text: '男', value: '0' },
+              { text: '女', value: '1' },
+              { text: '请选择', value: '-1' }
+            ]
+        }, methods: {
+            addData: function () {
+                if ($("#usertype").val() != "") {
+                    if ($("#username").val() == "" ||$("#account").val() == "" || $("#pwd").val() == ""||$("#usersex").val() == "" ) {
+                        alert("请填满资料！");
+                    }
+                    else {
+                        var para = {
+                            usertype: this.usertype,
+                            username:this.username,
+                            account: this.useraccount,
+                            pwd: this.pwd,
+                            usersex:this.selected
+                        };
+                        $.ajax({
+                            type: "post",
+                            url: "/Login/Add",
+                            data: para,
+                            success: function (data) {
+                                if(@ViewBag.usertype==1){
+                                    if(data){
+                                        alert("注册成功！");
+                                    }
+                                    else{
+                                        alert("注册失败！");
+                                    }
+                                }else{
+                                    if(data){
+                                        alert("添加成功！");
+                                    }
+                                    else{
+                                        alert("添加失败！");
+                                    }
+                                }
+                            }
+                        });
+                        this.useraccount = "",
+                        this.pwd = "",
+                        this.username="",
+                        this.selected="-1"
+                    }
+                } else {
+                    alert("现在用户类型为空!");
+                }
+            }
+        }
+    });
+</script>
+

@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - 电子书管理系统</title>
+    @*@Styles.Render("~/Content/css")*@
+    @Scripts.Render("~/bundles/modernizr")
+    <script src="~/Scripts/vue.js"></script>
+
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/UsingJs/myjs.js"></script>
+    <link href="~/Scripts/layui/layui.css" rel="stylesheet" />
+    <script src="~/Scripts/layui/layui.js"></script>
+</head>
+
+<body  class="MyContain">
+    <div class="navbar navbar-fixed-top">
+        @*<script>
+        require.config({
+            baseUrl: "http://js.40017.cn/cn/v/v1/backend/jqmodule"
+        });
+        </script>*@
+        @RenderBody()
+
+        @Scripts.Render("~/bundles/jquery")
+        @*@Scripts.Render("~/bundles/bootstrap")*@
+        @RenderSection("scripts", required: false)
+    </div>
+</body>
+</html>
+@*<script src = "https://unpkg.com/vue/dist/vue.js" ></script >*@
+<script>
+    $(function () {
+    });
+</script>

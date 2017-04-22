@@ -1,0 +1,81 @@
+﻿
+@{
+    ViewBag.Title = "ApplyBook";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    #apply {
+        margin-left: 10%;
+    }
+</style>
+<h2>ApplyBook</h2>
+<form class="layui-form" action="">
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">书籍名称</label>
+            <div class="layui-input-inline">
+                <input id="BookName" name="BookName" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">书籍类型</label>
+            <div class="layui-input-inline">
+                <select id="BookType" name="BookType" lay-verify="required" lay-search="">
+                    <option value="">直接选择或搜索选择</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">书籍简介</label>
+        <div class="layui-input-block">
+            <input id="Introduction" type="text" name="Introduction" class="layui-input">
+        </div>
+    </div>
+
+    <div>
+        <input id="apply" type="button" class="layui-btn layui-btn-normal" value="开始申请" />
+    </div>
+</form>
+<script>
+    layui.use(['form', 'layedit', 'laydate'], function () {
+        var form = layui.form()
+    });
+    $(function () {
+        $.post("/Writer/FindBookType",
+            {},
+            function (data) {
+                if (data != null) {
+                    if (data.List != null && data.List.length > 0) {
+                        BookTypeToOption(data.List);
+                    }
+                } else {
+                    alert("没获取到书籍类型！")
+                }
+            });
+    });
+    function BookTypeToOption(list) {
+        var str = "";
+        for (var i = 0 ; i < list.length; i++) {
+            str += "<option value='" + list[i].BTId + "'>" + list[i].BTName + "</option>"
+        }
+        $("#BookType").html(str);
+    }
+    $("#apply").click(function () {
+        $.post("/Writer/ApplyABook",
+            {
+                BookName: $("#BookName").val(),
+                Introduction: $("#Introduction").val(),
+                BookType: $("#BookType option:selected").val()
+            },
+            function (data) {
+                if (data.IsSuccess) {
+                    alert("开始申请书籍！");
+                } else {
+                    alert("申请书籍失败！");
+                }
+            })
+    });
+</script>

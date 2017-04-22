@@ -1,0 +1,50 @@
+﻿
+@{
+    ViewBag.Title = "WriterWeb";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var account = ViewBag.account;
+}
+
+<style>
+    .Writortop{
+        font-size:2.5em;
+    }
+</style>
+
+<legend class="Writortop">作者专区</legend>
+<input id="applybook" class="layui-btn layui-btn-normal layui-btn-radius" type="button" value="申请书籍" />
+
+<div class="layui-tab layui-tab-card" lay-filter="demo" style="height: auto;">
+    <ul class="layui-tab-title">
+        <li class="layui-this">已上架书籍</li>
+        <li>申请书籍列表</li>
+    </ul>
+
+    <div class="layui-tab-content " style="padding: 10px;">
+        <div class="layui-tab-item layui-show">
+            <iframe style="width:100%;min-height:500px" src="/Writer/ShelvesBooks" frameborder="0"></iframe>
+        </div>
+        <div class="layui-tab-item">
+            <iframe style="width:100%;min-height:500px;" src="/Writer/ApplyBooks" frameborder="0"></iframe>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use(['layer', 'laypage', 'element'], function () {
+        var layer = layui.layer
+        , laypage = layui.laypage
+        , element = layui.element();
+
+        //监听Tab切换
+        element.on('tab(demo)', function (data) {
+            layer.msg('切换了：' + this.innerHTML);
+            console.log(data);
+        });
+    });
+    $("#applybook").click(function () {
+        window.open("/Writer/ApplyBook")
+    });
+    @*$.post("/Writer/ToApplyBook", {account : @account}, function (data) {
+
+    });*@
+</script>

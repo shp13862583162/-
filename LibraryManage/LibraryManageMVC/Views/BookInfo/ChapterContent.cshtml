@@ -1,0 +1,82 @@
+﻿
+@{
+    ViewBag.Title = "ChapterContent";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var CHID = Model.CHID;
+    var BookID = Model.BookID;
+    var min  = ViewBag.Min;
+    var max = ViewBag.Max;
+}
+@model LibraryModel.Book.ChapterModel
+<style>
+    .topname {
+        font-size: 2em;
+        font-family: Microsoft YaHei \5FAE\8F6F\96C5\9ED1;
+    }
+    .chpname{
+        font-size: 1.5em;
+        font-family: Microsoft YaHei \5FAE\8F6F\96C5\9ED1;
+        margin-left:45%
+    }
+</style>
+
+<h2 class="topname">章节详情</h2>
+
+<input id="BookID" type="hidden" value="@Model.BookID" />
+<input id="CHID" type="hidden" value="@Model.CHID" />
+
+<div >
+    <div >
+        <span class="chpname">
+            @Model.CHName
+        </span>
+    </div>
+    <div>
+        <span class="chpcontentname">
+            @Model.CHContent
+        </span>
+    </div>
+
+    <div style="margin-top:50px;">
+        <input id="Above" onclick="Above()" style="margin-left:40%;display:inline-block;" class="layui-btn" type="button" value="上一章节" />
+        <input id="next" onclick="next()" style="margin-right:40%;display:inline-block;" class="layui-btn" type="button" value="下一章节" />
+    </div>
+</div>
+
+<script>
+    var cHID = @CHID;
+    var bookID = @BookID;
+    $(function () {
+        if(@min == cHID ){
+            $("#Above").addClass("layui-btn-disabled");
+            $("#Above").removeAttr("onclick");
+        }else{
+            $("#Above").removeClass("layui-btn-disabled");
+            $("#Above").attr("onclick","Above()")
+        }
+        if(@max == cHID){
+            $("#next").addClass("layui-btn-disabled");
+            $("#next").removeAttr("onclick");
+        }else{
+            $("#next").removeClass("layui-btn-disabled");
+            $("#next"),Attr("onclick","next()");
+        }
+    });
+    //上一章节
+    function Above() {
+        var data={
+            CHID:cHID-1,
+            Bookid:bookID
+        };
+        location.href = "/BookInfo/ChapterContent?"+jQuery.param(data);
+    }
+    //下一章节
+    function next() {
+        var data={
+            CHID:cHID+1,
+            Bookid:bookID
+        };
+        location.href = "/BookInfo/ChapterContent?"+jQuery.param(data);
+    }
+
+</script>

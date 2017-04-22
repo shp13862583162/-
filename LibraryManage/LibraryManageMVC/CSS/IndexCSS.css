@@ -1,0 +1,30 @@
+﻿body {
+}
+
+#indexcontain {
+    min-height: 600px;
+}
+
+#typeRank {
+    width: 99.8%;
+    height: 10%;
+    border:1px solid black;
+}
+
+#booktypeRank {
+    width: 40%;
+    height: 80%;
+    border:1px solid black;
+    float: left;
+}
+
+#bookRank {
+    width: 15%;
+    height: 80%;
+    border:1px solid black;
+    float: right;
+}
+
+#typetable {
+    width: 100%;
+}

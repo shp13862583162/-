@@ -1,0 +1,51 @@
+﻿
+@{
+    ViewBag.Title = "AddChapter";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var bookid = ViewBag.bookid;
+}
+
+<style>
+    #wzcontent{
+        height:500px;;
+    }
+    #addChapter{
+        margin-left:20%;
+    }
+</style>
+
+<div class="layui-form-item">
+    <label class="layui-form-label">章节名称</label>
+    <div class="layui-input-block">
+        <input id="chapterName" type="text"  lay-verify="title" autocomplete="off" placeholder="请输入名称" class="layui-input">
+    </div>
+</div>
+<div class="layui-form-item layui-form-text">
+    <label class="layui-form-label">章节内容</label>
+    <div class="layui-input-block">
+        <textarea id="wzcontent" placeholder="请输入内容" class="layui-textarea"></textarea>
+    </div>
+</div>
+<div>
+    <input id="addChapter" class="layui-btn layui-btn-normal" value="添加" />
+</div>
+<script>
+    var bookid= @bookid;
+    $(function () {
+    });
+    $("#addChapter").click(function () {
+        $.post("/Writer/AddMyChapter",
+            {
+                chapterName: $("#chapterName").val(),
+                wzcontent: $("#wzcontent").val(),
+                bookid: bookid
+            },
+            function (data) {
+                if(data.Issuccess){
+                    alert("添加成功!")
+                }else{
+                    alert("添加失败！");
+                }
+            });
+    });
+</script>

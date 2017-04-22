@@ -1,0 +1,313 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "BanList";
+}
+
+<style>
+    #timerange {
+        display: inline-block;
+    }
+     .time{
+        width:40%;
+     }
+</style>
+
+<h2>封杀列表</h2>
+<form class="layui-form" action="">
+    <div class="layui-form-item">
+        <label class="layui-form-label">作者名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="Writername" id="Writername" lay-verify="title" autocomplete="off" placeholder="请输入作者名称" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">申请时间</label>
+            <div class="layui-input-block">
+                <input type="text" name="date" id="startdatetime" placeholder="开始时间" autocomplete="off" class="layui-input" onclick="layui.laydate({elem: this})">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">申请时间</label>
+            <div class="layui-input-block">
+                <input type="text" name="date" id="enddatetime" placeholder="结束时间" autocomplete="off" class="layui-input" onclick="layui.laydate({elem: this})">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">书籍申请类型</label>
+            <div class="layui-input-inline">
+                <select id="ReportStatue" name="ApplyStatue" lay-verify="required" lay-search="">
+                    <option value="0">请选择</option>
+                    <option value="2">被举报</option>
+                    <option value="3">已封杀</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</form>
+<input type="button" id="find" class="layui-btn layui-btn-normal" value="查询" />
+<div id="BanList">
+    <table id="table" class="layui-table" lay-skin="line">
+        <colgroup>
+            <col width="150">
+            <col width="150">
+            <col width="200">
+            <col>
+        </colgroup>
+        <thead>
+            <tr>
+                <th>被举报ID</th>
+                <th>被举报者姓名</th>
+                <th>被举报次数</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <div id="demoPage"></div>
+</div>
+
+<script>
+    var total = 0;
+    $(function () {
+        //FindDataAndPage(1, 10);
+    });
+    layui.use(['form', 'laypage', 'layer', 'laydate'], function () {
+        var laypage = layui.laypage
+            , laydate = layui.laydate
+        , layer = layui.layer
+        , form = layui.form();
+
+        //调用分页
+        //laypage({
+        //    cont: 'demoPage' //分页容器的id
+        //    , pages: Math.ceil(total / 10) //总页数
+        //    , skin: '#5FB878' //自定义选中色值
+        //    //,skip: true //开启跳页
+        //    , jump: function (obj, first) {
+        //        if (!first) {
+        //            layer.msg('第' + obj.curr + '页');
+        //            FindDataAndPage(obj.curr, 10);
+        //        }
+        //    }
+        //});
+
+    function FindDataAndPage(pageindex, pagesize,render) {
+        $.post("/Admin/FindBan",
+            {
+                Writername: $("#Writername").val(),
+                startdatetime: $("#startdatetime").val(),
+                enddatetime: $("#enddatetime").val(),
+                ReportStatue: $("#ReportStatue option:selected").val(),
+                PageIndex: pageindex,
+                PageSize: pagesize
+            }
+            , function (data) {
+                total = data.Total;
+                if (render) {
+                    //调用分页
+                    laypage({
+                        cont: 'demoPage' //分页容器的id
+                        , pages: Math.ceil(total / 10) //总页数
+                        , skin: '#5FB878' //自定义选中色值
+                        //,skip: true //开启跳页
+                        , jump: function (obj, first) {
+                            if (!first) {
+                                layer.msg('第' + obj.curr + '页');
+                                FindDataAndPage(obj.curr, 10,false);
+                            }
+                        }
+                    });
+                }
+
+                list = data.List;
+                var str = "";
+                for (var i = 0; i < list.length; i++) {
+                    str += "<tr>";
+                    str += "<td>" + list[i].ReportID + "</td>";
+                    str += "<td>" + list[i].ReportName + "</td>";
+                    str += "<td>" + list[i].ReportNum + "</td>";
+                    str += "<td><a class='Report' myReportid='" + list[i].ReportID + "'>通过  </a>";
+                    str += "<a class='ignore'  myignoreid='" + list[i].ReportID + "'>   忽略</a></td>";
+                    str += "</tr>";
+                }
+                if (list == null && list.length <= 0) {
+                    str += "<tr><td colspan='" + list.Count + "'>无数据</td></tr>";
+                }
+                $("#table tbody").html(str);
+            });
+    }
+    $("#find").click(function () {
+        FindDataAndPage(1, 10,true);
+    });
+    });
+
+    //封杀作者成功
+    $(document).on("click", ".Report", function () {
+        var ReportID = $(this).attr("myReportid");
+        $.post("/Admin/ReportAdopt", { ReportID: ReportID }, function (data) {
+            if (data != null) {
+                if (data) {
+                    alert("封杀成功！");
+                } else {
+                    alert("封杀失败！");
+                }
+            } else {
+                alert("升级失败！");
+            }
+        });
+    });
+    //忽略投诉
+    $(document).on("click", ".ignore", function () {
+        var ReportID = $(this).attr("myignoreid");
+        $.post("/Admin/ReportIgnore", { ReportID: ReportID }, function (data) {
+            if (data != null) {
+                if (data) {
+                    alert("驳回成功！");
+                } else {
+                    alert("驳回失败！");
+                }
+            } else {
+                alert("驳回失败！");
+            }
+        });
+    });
+
+    //require(["table/0.2.0/table"], function (Table, Timepicker) {
+    //    //配置信息
+    //    var option = {
+    //        wrapper: "#table",
+    //        showfooter: true,
+    //        pagination: true,
+    //        detailView: false,
+    //        detailFormat: function (rowdata, res) {
+    //            res("这里是明细:" + JSON.stringify(rowdata));
+    //        },
+    //        emptyText: "数据为空" //空数据时显示内容,设置为false可关闭此显示
+    //        ,
+    //        paging: {
+    //            pageSize: 25,
+    //            showAmount: true,
+    //            initLoad: true, //默认为true,false时初始化组件不自动获取数据
+    //            data: function (pageindex, pagesize, res, opt) {
+    //                $.ajax({
+    //                    type: "post",
+    //                    url: "/Admin/FindBan",
+    //                    data:  {
+    //                        Writername: $("#Writername").val(),
+    //                        startdatetime: $("#startdatetime").val(),
+    //                        enddatetime: $("#enddatetime").val(),
+    //                        ReportStatue: $("#ReportStatue option:selected").val(),
+    //                        PageIndex: pageindex,
+    //                        PageSize: pagesize
+    //                    },
+    //                    success: function (Data) {
+    //                        res({ total: Data.Total, data: Data.List });
+    //                    },
+    //                    error: function (Data) {
+    //                        res({ total: 0, data: [] });
+    //                    }
+    //                });
+    //            }
+    //        },
+    //        columns: [
+    //             {
+    //                 title: "被举报ID",
+    //                 field: "ReportID"
+    //             },
+    //            {
+    //                title: "被举报者姓名",
+    //                field: "ReportName"
+    //            },
+    //             {
+    //                 title: "被举报次数",
+    //                 field: "ReportNum"
+    //             },
+    //             {
+    //             title: "处理",
+    //             formatter: function (value, row, index) {
+    //                 var a = "<a class='Report' myid='" + row.ReportID + "'>封杀</a>";
+    //                 var b = "<a class='ignore' myid='" + row.ReportID + "'>忽略</a>";
+    //                 return a ;
+    //             },
+    //             align: "center"
+    //         }
+    //        ]
+    //    };
+    //    //实例化   
+    //    var table = new Table(option);
+
+    //    //行选中
+    //    table.on("row.check", function (e, rowdata, rowindex) {
+    //        console.log("check row data:" + JSON.stringify(rowdata) + ",row index:" + rowindex);
+    //    });
+    //    //行取消选中
+    //    table.on("row.uncheck", function (e, rowdata, rowindex) {
+    //        console.log("uncheck row data:" + JSON.stringify(rowdata) + ",row index:" + rowindex);
+    //    });
+
+    //    table.on('sort', function (e, obj) {
+    //        console.log(obj);
+    //    });
+
+    //    $(document).on("click", ".assemblyedit", function () {
+    //        ShowSomething($(this).attr("url"));
+    //    });
+    //    //按钮事件,可做查询触发用
+    //    $("#btn_search").click(function () {
+    //        //table.reload();
+    //        table.setRowStatus(0, "");
+    //    });
+
+    //    $("#btn_select").click(function () {
+    //        var seldatas = table.getSelectRow();
+    //        console.log(seldatas);
+    //        alert(JSON.stringify(seldatas));
+    //    });
+    //    $("#btn_unselect").click(function () {
+    //        var seldatas = table.getUnSelectRow();
+    //        console.log(seldatas);
+    //        //alert(JSON.stringify(seldatas));
+    //    });
+    //    $(document).on("click", "#find", function () {
+    //        table.refresh();
+    //    });
+
+    //    //封杀作者成功
+    //    $(document).on("click", ".Report", function () {
+    //        var ReportID = $(this).attr("myid");
+    //        $.post("/Admin/ReportAdopt", { ReportID: ReportID }, function (data) {
+    //            if (data != null) {
+    //                if (data.IsSuccess) {
+    //                    alert("升级成功！");
+    //                } else {
+    //                    alert("升级失败！");
+    //                }
+    //            } else {
+    //                alert("升级失败！");
+    //            }
+    //        });
+    //    });
+    //    //忽略投诉
+    //    $(document).on("click", ".ignore", function () {
+    //        var ReportID = $(this).attr("myid");
+    //        $.post("/Admin/ReportIgnore", { ReportID: ReportID }, function (data) {
+    //            if (data != null) {
+    //                if (data.IsSuccess) {
+    //                    alert("驳回成功！");
+    //                } else {
+    //                    alert("驳回失败！");
+    //                }
+    //            } else {
+    //                alert("驳回失败！");
+    //            }
+    //        });
+    //    });
+    //});
+
+</script>
+
+

@@ -1,0 +1,154 @@
+﻿@{
+    ViewBag.Title = "Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .top{
+        position:absolute;
+        margin:0px;
+        width:100%;
+        height:50px;
+        align-content:center;
+        background-color:#00ffcc;
+    }
+    #ContainID{
+        width:100%;
+    }
+    #iframediv{
+        width:100%;
+    }
+    #iframe {
+        border: none;
+        width: 81%;
+        min-height: 670px;
+        margin-top: 60px;
+        margin-left: 10%;
+    }
+    .tab {
+        color: #6f00D2;
+        font-size: 2em;
+        margin-right: 300px;
+    }
+   .layui-nav li{
+       margin-left:20px;
+   }  
+</style>
+
+<input type="hidden" id="name" />
+<input type="hidden" id="typename" />
+<input type="hidden" id="useraccount" />
+
+
+
+<div id="ContainID">
+    <div class="top">
+            <ul class="layui-nav">
+                <li class="layui-nav-item"><a class="tab" href="/Home/Detail">电子书管理系统</a></li>
+                <li class="layui-nav-item"><a href="/Home/Detail">主页</a></li>
+                <li id="aboutme" class="layui-nav-item">
+                    <a href="javascript:;" v-on:mouseover="showdata" v-on:mouseout="hidedata">关于我</a>
+                    <dl id="showme" style="width:120px;background-color:cornsilk;margin-left:0px; display:none;position:absolute;" class="layui-nav-child">
+                        <dd><a href="">用户：{{name}}</a></dd>
+                        <dd><a href="">权限：{{typename}}</a></dd>
+                    </dl>
+                </li>
+                <li id="self" class="layui-nav-item"><a href="">个人中心</a></li>
+                @if (UserEntity.Type == 3)
+                {
+                    <li id="AdminForm" class="layui-nav-item"><a href="###">管理员专区</a></li>
+                }
+                else if (UserEntity.Type == 2)
+                {
+                    <li id="WriterForm" class="layui-nav-item"><a href="###">作者专区</a></li>
+                }
+            </ul>
+            @*<ul class="nav navbar-nav">
+                <li>@Html.ActionLink("主页", "Detail", "Home")</li>
+                <li id="aboutme">
+                    <a v-on:mouseover="showdata" v-on:mouseout="hidedata">关于我</a>
+                    <dl id="showme" style="width:120px;background-color:cornsilk;margin-left:180px; display:none;position:absolute;">
+                        <dt style="text-align:center;"><a>用户：{{name}}</a></dt>
+                        <dt style="text-align:center;"><a>权限：{{typename}}</a></dt>
+                    </dl>
+                </li>
+                <li id="self"><a href="###">个人中心</a></li>
+                @if(UserEntity.Type == 3){
+                    <li id="AdminForm"><a href="###">管理员专区</a></li>
+                }
+                else if (UserEntity.Type == 2)
+                {
+                    <li id="WriterForm"><a href="###">作者专区</a></li>
+                }
+            </ul>*@
+        </div>
+    <div id="iframediv">
+        <iframe id="iframe" src="/Home/Index"></iframe>
+    </div>
+    <hr />
+    <br/>
+    <footer>
+        <p>&copy; @DateTime.Now.Year - 电子书管理系统</p>
+    </footer>
+    <br />
+    <br />
+
+</div>
+<script>
+    //这里要修改
+    $(function () {
+
+        $.ajax({
+            type: 'POST',
+            url: '/Home/GetSelfInfo',
+            data: {},
+            success: function (data) {
+                $("#name").val(data.Name);
+                $("#typename").val(data.UserTypeName);
+                $("#useraccount").val(data.Account);
+                var url = "/Home/Self?useraccount=" + @UserEntity.Account;
+                var adminurl = "/Admin/AdminDetail?useraccount=" + @UserEntity.Account;
+                var str = "<a id='selfa' onclick='SelfWeb()'  myurl=" + url + ">个人中心</a>";
+                var adminstr = "<a id='AdminForma' onclick='AdminWeb()'  myurl=" + adminurl + ">管理员专区</a>";
+                $("#self").html(str);
+                $("#AdminForm").html(adminstr);
+            }
+        });
+    });
+
+    function SelfWeb() {
+        var myurl = $("#selfa").attr("myurl");
+        window.open(myurl);
+    }
+
+    function AdminWeb() {
+        var myurl = $("#AdminForma").attr("myurl");
+        window.open(myurl);
+    }
+    $("#WriterForm").click(function(){
+        var myurl = "/Writer/WriterWeb?account=" +@UserEntity.Account;
+        window.open(myurl);
+    });
+
+
+    new Vue({
+        el: '#aboutme',
+        data: {
+            name: '',
+            typename: ''
+        },
+        methods: {
+            showdata: function () {
+                var _self = this;
+                $("#showme").css("display", "block");
+                _self.name = $("#name").val();
+                _self.typename = $("#typename").val();
+            },
+            hidedata: function () {
+                $("#showme").css("display", "none");
+            }
+        }
+    });
+
+
+</script>

@@ -1,0 +1,111 @@
+﻿
+@{
+    ViewBag.Title = "WriterAddChapter";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var bookid = Model.BBookID;
+    var WriterID = Model.WriterID;
+}
+@model LibraryModel.Book.BookModel
+
+<style>
+    .contain {
+        width: 80%;
+        margin-left: 10%;
+    }
+
+    .myChpName {
+        font-size: 3em;
+        font-family: Microsoft YaHei \5FAE\8F6F\96C5\9ED1;
+        margin-left: 40%;
+    }
+
+    #listid {
+        font-size: 2em;
+        font-family: Microsoft YaHei \5FAE\8F6F\96C5\9ED1;
+    }
+</style>
+
+<div class="contain">
+    <span class="myChpName">@Model.BName</span>
+    <fieldset class="layui-elem-field">
+        <legend>@Model.BName</legend>
+        <div class="layui-field-box">
+            <span>作者：</span>
+            简介：
+            @Model.BIntroduction
+        </div>
+    </fieldset>
+
+    <div>
+        <a id="listid">查看目录</a>
+    </div>
+    <div>
+        <table id="listtable" class="layui-table" lay-even="" lay-skin="row">
+            <colgroup>
+                <col width="500">
+                <col width="500">
+                <col width="500">
+                <col>
+            </colgroup>
+            <tbody id="tabletbody"></tbody>
+        </table>
+    </div>
+    <br />
+    
+   
+    <div>
+        <input id="AddChapter" class="layui-btn layui-btn-normal" type="button" value="添加章节" />
+    </div>
+</div>
+<script>
+
+   var bookid=@bookid;
+    $(function(){
+
+        $.post("/BookInfo/SelectList",{bookid:bookid},function(data){
+            if(data!=null){
+                if(data.List!=null){
+                    ListTable(data.List);
+                }
+            }
+        });
+    });
+
+    $("#listid").click(function(){
+        $.post("/BookInfo/SelectList",
+              {
+                  Bookid:bookid
+              },
+              function(data){
+                  if(data.List!= null){
+                      ListTable(data.List);
+                  }
+              });
+    });
+
+    function ListTable(list){
+        var str = "<tr>";
+        for(var i= 1;i<list.length+1;i++){
+            str += "<td class='listclass' onclick='listclass(this)' id='"+list[i-1].CHID+"'>"+i+","+list[i-1].CHName+"</td>"
+            if(i%3 == 0){
+                str += "</tr><tr>";
+            }
+        }
+        if(list.length/3!=0){
+            str += "</tr>";
+        }
+        $("#tabletbody").html(str);
+    }
+    function listclass(obj){
+        //章节ID
+        var CHID = $(obj).attr("id");
+        var data={
+            CHID:CHID,
+            Bookid:bookid
+        };
+        window.open("/BookInfo/ChapterContent?"+jQuery.param(data));
+    }
+    $("#AddChapter").click(function(){
+        window.open("/Writer/AddChapter?bookid="+bookid);
+    });
+</script>

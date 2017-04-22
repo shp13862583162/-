@@ -1,0 +1,155 @@
+﻿
+@{
+    ViewBag.Title = "Self";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var SexName = "";
+}
+@model LibraryModel.User.UserModel
+<style>
+    #booktable {
+        width: 100%;
+    }
+
+    #selfcontain {
+        width: 80%;
+        margin-left: 10%;
+    }
+</style>
+
+<input id="myaccount" value="@Model.Account" type="hidden" />
+@if (Model.Sex == 0)
+            {
+                SexName = "男";
+            }
+            else if (Model.Sex == 1)
+            {
+                SexName = "女";
+            }
+            else
+            {
+                SexName = "不详";
+            }
+<fieldset id="selfcontain" class="layui-elem-field site-demo-button">
+    <legend>个人中心</legend>
+    <div>
+        <br />
+        <table class="layui-table">
+            <colgroup>
+                <col width="50">
+                <col width="150">
+                <col width="150">
+                <col width="200">
+                <col>
+            </colgroup>
+
+            <tbody>
+                <tr>
+                    <td>姓名:</td>
+                    <td>@Model.Name</td>
+                    <td>性别:</td>
+                    <td>@SexName</td>
+                </tr>
+                <tr>
+                    <td>手机号码:</td>
+                    <td>@Model.Account</td>
+                    <td>当前权限:</td>
+                    <td>@Model.TypeName</td>
+                </tr>
+                @if (Model.Type == 1)
+                {
+                    <tr>
+                        <td>申请作者权限:</td>
+                        <td><input type="button" id="apply" class="layui-btn layui-btn-normal" value="申请" /></td>
+                        <td> 申请作者状态:</td>
+                        <td>
+                            <a id="applystatue">
+                                @if (Model.PStatue == 1)
+                {
+                                    <span>申请中</span>
+                                }
+                                else if (Model.PStatue == 3)
+                                {
+                                    <span>申请驳回</span>
+                                }
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+
+        <div id="collection">
+            <input v-on:click="lookintroduction()" class="layui-btn layui-btn-primary" value="查看收藏" />
+            <div>
+                <table id="booktable" class="layui-table" lay-skin="line">
+                    <thead>
+                        <tr>
+                            <th>书籍id</th>
+                            <th>书籍名称</th>
+                            @*<th>书籍类型</th>*@
+                            <th>作者</th>
+                            <th>简介</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="book in books">
+                            <td class="bookid" style="width:10%">{{book.BBookID}}</td>
+                            <td style="width:20%">{{book.BName}}</td>
+                            @*<td style="width:10%">{{book.BTypeID}}</td>*@
+                            <td style="width:10%">{{book.Writer}}</td>
+                            <td style="width:40%">{{book.BIntroduction}}</td>
+                            <td style="width:10%"><a asd="a" myid="{{book.BBookID}}" onclick="shanchu(this)">删除</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</fieldset>
+
+
+<script>
+    $(function(){
+        $("#apply").click(function(){
+            $.post("/Writer/AddPromotion",{Account:@Model.Account},function(data){
+                if(data!=null){
+                    if(data.IsTrue){
+                        alert("开始申请！");
+                    }else{
+                        alert(data.Message);
+                    }
+                }
+            });
+        });
+    });
+    function shanchu(thisobj){
+        var id = $(thisobj).attr("myid");
+        $.post("/Home/ShancIntroduction",{account :@Model.Account,bookid:id},function(data){
+            if(data){
+                alert("删除成功");
+            }
+        });
+    }
+    var Vue = new Vue({
+        el: '#collection',
+        data:{books:[]},
+        methods:{
+            lookintroduction:function(){
+                $.post("/Home/GetIntroduction", { account: @Model.Account }, function (Data) {
+                    Vue.books = Data;
+                });
+            },
+            @*shanchu:function(thisobj){
+                debugger
+                var id = $(thisobj).attr("myid");
+                $.post("/Home/ShancIntroduction",{account :@Model.Account,bookid:id},function(data){
+                    if(data.issuccess){
+                        alert("删除成功")
+                    }
+                });
+            }*@
+        }
+    });
+</script>

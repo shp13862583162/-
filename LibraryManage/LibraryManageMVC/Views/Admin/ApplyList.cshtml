@@ -1,0 +1,309 @@
+﻿
+@{
+    ViewBag.Title = "ApplyList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    #timerange {
+        display: inline-block;
+    }
+
+    .time {
+        width: 40%;
+    }
+</style>
+
+<form class="layui-form" action="">
+    <div class="layui-form-item">
+        <label class="layui-form-label">书籍名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="bookname" id="bookname" lay-verify="title" autocomplete="off" placeholder="请输入标题" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">申请时间</label>
+            <div class="layui-input-block">
+                <input type="text" name="date" id="startdatetime" placeholder="开始时间" autocomplete="off" class="layui-input" onclick="layui.laydate({elem: this})">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">申请时间</label>
+            <div class="layui-input-block">
+                <input type="text" name="date" id="enddatetime" placeholder="结束时间" autocomplete="off" class="layui-input" onclick="layui.laydate({elem: this})">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">书籍申请类型</label>
+            <div class="layui-input-inline">
+                <select id="ApplyStatue" name="ApplyStatue" lay-verify="required" lay-search="">
+                    <option value="0">请选择</option>
+                    <option value="1">申请中</option>
+                    <option value="2">申请成功</option>
+                    <option value="3">已反驳</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</form>
+<input type="button" id="find" class="layui-btn layui-btn-normal" value="查询" />
+
+<div id="ApplyList">
+    <table id="table" class="layui-table" lay-skin="line">
+        <colgroup>
+            <col width="150">
+            <col width="150">
+            <col width="200">
+            <col>
+        </colgroup>
+        <thead>
+            <tr>
+                <th>书籍ID</th>
+                <th>书籍名称</th>
+                <th>书籍申请者ID</th>
+                <th>书籍申请者</th>
+                <th>申请时间</th>
+                <th>申请状态</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <div id="demoPage"></div>
+</div>
+
+<script>
+    var total = 0;
+    $(function () {
+        //FindDataAndPage(1, 10,true);
+    });
+    layui.use(['form', 'laypage', 'layer', 'laydate'], function () {
+        var laypage = layui.laypage
+            , laydate = layui.laydate
+        , layer = layui.layer
+        , form = layui.form();
+
+        $("#find").on("click", function () {
+            FindDataAndPage(1, 10, true);
+        });
+        function FindDataAndPage(pageindex, pagesize, render) {
+            $.post("/Admin/FindApply",
+                {
+                    bookname: $("#bookname").val(),
+                    startdatetime: $("#startdatetime").val(),
+                    enddatetime: $("#enddatetime").val(),
+                    ApplyStatue: $("#ApplyStatue option:selected").val(),
+                    PageIndex: pageindex,
+                    PageSize: pagesize
+                }
+                ,
+                function (data) {
+                    total = data.Total;
+                    if (render) {
+                        laypage({
+                            cont: 'demoPage' //分页容器的id
+                , pages: Math.ceil(total / 10) //总页数
+                , skin: '#5FB878' //自定义选中色值
+                            //,skip: true //开启跳页
+                , jump: function (obj, first) {
+                    if (!first) {
+                        layer.msg('第' + obj.curr + '页');
+                        FindDataAndPage(obj.curr, 10, false);
+                    }
+                }
+                        });
+                    }
+                    list = data.List;
+                    var str = "";
+                    for (var i = 0; i < list.length; i++) {
+                        str += "<tr>";
+                        str += "<td>" + list[i].BBookID + "</td>";
+                        str += "<td>" + list[i].BName + "</td>";
+                        str += "<td>" + list[i].WriterID + "</td>";
+                        str += "<td>" + list[i].Writer + "</td>";
+                        str += "<td>" + data_string_Date(list[i].ApplyTime).FormatStr("yyyy-MM-dd") + "</td>";
+                        if (list[i].BStatue == 1) {
+                            str += "<td>申请中</td>";
+                        }
+                        else if (list[i].BStatue == 2) {
+                            str += "<td>申请成功</td>";
+                        }
+                        else if (list[i].BStatue == 3) {
+                            str += "<td>申请被驳回</td>";
+                        }
+                        str += "<td><a class='adopt' myadoptid='" + list[i].BBookID + "'>通过</a><a class='reject' myrejectid='" + list[i].BBookID + "'>驳回</a></td>";
+                        str += "</tr>";
+                    }
+                    if (list == null && list.length <= 0) {
+                        str += "<tr><td colspan='" + list.Count + "'>无数据</td></tr>";
+                    }
+                    $("#table tbody").html(str);
+                });
+        }
+    });
+
+
+    function operations(obj) {
+        //myid = $(obj).attr("myid");
+        //alert(myid);
+
+    }
+    //书籍申请 成功
+    $(document).on("click", ".adopt", function () {
+        var BookID = $(this).attr("myadoptid");
+        $.post("/Admin/BookAdopt", { BookID: BookID }, function (data) {
+            if (data) {
+                alert("书籍审批通过！");
+            } else {
+                alert("书籍审批失败！");
+            }
+        });
+    });
+    //书籍申请 失败
+    $(document).on("click", ".reject", function () {
+        var BookID = $(this).attr("myrejectid");
+        $.post("/Admin/BookReject", { BookID: BookID }, function (data) {
+            if (data) {
+                alert("驳回成功！");
+            } else {
+                alert("驳回失败！");
+            }
+        });
+    });
+
+    //require(["table/0.2.0/table"], function (Table, Timepicker) {
+    //    //配置信息
+    //    var option = {
+    //        wrapper: "#table",
+    //        showfooter: true,
+    //        pagination: true,
+    //        detailView: false,
+    //        detailFormat: function (rowdata, res) {
+    //            res("这里是明细:" + JSON.stringify(rowdata));
+    //        },
+    //        emptyText: "数据为空" //空数据时显示内容,设置为false可关闭此显示
+    //        ,
+    //        paging: {
+    //            pageSize: 25,
+    //            showAmount: true,
+    //            initLoad: true, //默认为true,false时初始化组件不自动获取数据
+    //            data: function (pageindex, pagesize, res, opt) {
+    //                $.ajax({
+    //                    type: "post",
+    //                    url: "/Admin/FindApply",
+    //                    data:  {
+    //                        bookname: $("#bookname").val(),
+    //                        startdatetime: $("#startdatetime").val(),
+    //                        enddatetime: $("#enddatetime").val(),
+    //                        ApplyStatue: $("#ApplyStatue option:selected").val(),
+    //                        PageIndex: pageindex,
+    //                        PageSize: pagesize
+    //                    },
+    //                    success: function (Data) {
+    //                        res({ total: Data.Total, data: Data.List });
+    //                    },
+    //                    error: function (Data) {
+    //                        res({ total: 0, data: [] });
+    //                    }
+    //                });
+    //            }
+    //        },
+    //        columns: [
+    //             {
+    //                 title: "书籍ID",
+    //                 field: "BBookID"
+    //             },
+    //            {
+    //                title: "书籍名",
+    //                field: "BName"
+    //            },
+    //            {
+    //                title: "书籍申请者ID",
+    //                field: "WriterID"
+    //            },
+    //            {
+    //                title: "书籍申请者",
+    //                field: "Writer"
+    //            },
+    //             {
+    //                 title: "申请时间",
+    //                 field: "ApplyTime"
+    //             },
+    //             {
+    //                 title: "申请状态",
+    //                 field: "BStatue",
+    //                 formatter: function (value, row, index) {
+    //                     if (row.BStatue == 1) {
+    //                         return "申请中";
+    //                     }
+    //                     else if (row.BStatue == 2) {
+    //                         return "申请成功";
+    //                     }
+    //                     else if (row.BStatue == 3) {
+    //                         return "申请被驳回";
+    //                     }
+    //                 }
+    //             }, {
+    //             title: "处理",
+    //             formatter: function (value, row, index) {
+    //                 if (row.BStatue == 1) {
+    //                     var a = "<a class='adopt'  myadoptid='" + row.BBookID + "'>通过</a>";
+    //                     var b = "<a class='reject' myrejectid='" + row.BBookID + "'>驳回</a>";
+    //                     return a + b;
+    //                 }
+    //                 else {
+    //                     var c = "<span>无操作</span>";
+    //                 }
+    //                 return c;
+    //             },
+    //             align: "center"
+    //         }
+    //        ]
+    //    };
+    //    //实例化
+    //    var table = new Table(option);
+
+    //    //行选中
+    //    table.on("row.check", function (e, rowdata, rowindex) {
+    //        console.log("check row data:" + JSON.stringify(rowdata) + ",row index:" + rowindex);
+    //    });
+    //    //行取消选中
+    //    table.on("row.uncheck", function (e, rowdata, rowindex) {
+    //        console.log("uncheck row data:" + JSON.stringify(rowdata) + ",row index:" + rowindex);
+    //    });
+
+    //    table.on('sort', function (e, obj) {
+    //        console.log(obj);
+    //    });
+
+    //    $(document).on("click", ".assemblyedit", function () {
+    //        ShowSomething($(this).attr("url"));
+    //    });
+    //    //按钮事件,可做查询触发用
+    //    $("#btn_search").click(function () {
+    //        //table.reload();
+    //        table.setRowStatus(0, "");
+    //    });
+
+    //    $("#btn_select").click(function () {
+    //        var seldatas = table.getSelectRow();
+    //        console.log(seldatas);
+    //        alert(JSON.stringify(seldatas));
+    //    });
+    //    $("#btn_unselect").click(function () {
+    //        var seldatas = table.getUnSelectRow();
+    //        console.log(seldatas);
+    //        //alert(JSON.stringify(seldatas));
+    //    });
+    //    $(document).on("click", "#find", function () {
+    //        table.refresh();
+    //    });
+
+
+    //});
+
+</script>
+

@@ -1,0 +1,106 @@
+﻿
+@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .main {
+        width: 400px;
+        height: 200px;
+        margin:5% 35%;
+        align-content:center;
+    }
+    #title{
+        color:blue;
+        margin-left:20%;
+        margin-top:2% ; 
+        font-size:2em;
+    }
+    #btnLogin {
+        margin-left: 24%;
+    }
+
+    #forgetpwd {
+        margin-left: 24%;
+    }
+
+    #register {
+        margin-left: 15%;
+    }
+   #LoginWeb{
+       margin-left:30%;
+       margin-top:30px;
+   }
+   #logintitle{
+       font-size:2em;
+   }
+</style>
+<h2 id="title">电子书管理系统登录界面</h2>
+
+<fieldset id="LoginWeb" style="width:30%;"  class="layui-elem-field site-demo-button">
+    <legend id="logintitle">登录</legend>
+    <form class="layui-form" action="">
+        <br />
+        <div  style="margin-left:80px;" class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">用户账号：</label>
+                <div class="layui-input-inline">
+                    <input type="tel" name="UserAccount" id="UserAccount" class="layui-input">
+                </div>
+            </div>
+            <br />
+            <br />
+            <div class="layui-inline">
+                <label class="layui-form-label">用户密码：</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="UserPassword" id="UserPassword" class="layui-input">
+                </div>
+            </div>
+            <br />
+        </div>
+        <div>
+            <a id="btnLogin" class="layui-btn layui-btn-small layui-btn-normal" onclick="btnLogin()">登录</a>
+            <a id="btnregister" class="layui-btn layui-btn-small layui-btn-normal" href="/Login/Register?type=1">注册</a>
+        </div>
+        <br />
+
+        <div>
+            <a id="forgetpwd">忘记密码</a>
+        </div>
+        <br />
+        <br/>
+    </form>
+
+</fieldset>
+
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script>
+    $(function () {
+        var nologin = @ViewBag.nologin;
+        if(nologin==1){
+            alert("用户未登录！\n请登录后在进行操作");
+        }
+        $.post("/Login/UserInfoAdd", {a:"<a id='asdad' ></a>"}, function (data) {
+            if (data != null && data != "") {
+                var Data = JSON.parse(data);
+                $("#UserAccount").val(Data["Account"]);
+                $("#UserPassword").val(Data["Password"]);
+            }
+        });
+    }); 
+    
+    function btnLogin() {
+        if ($("#UserAccount").val() == "" ||$("#UserPassword").val() == "" ) {
+            alert("请完善登陆信息！");
+        }
+        $.post("/Login/CheckUser", { UserAccount: $("#UserAccount").val(), UserPassword: $("#UserPassword").val() }, function (data) {
+            if(data.success = 1){
+                alert("登录成功！");
+                window.location.href = "/Home/Detail";
+            }else{
+                alert("登录失败，请重新登录！");
+            }
+        });
+    };
+    
+</script>

@@ -1,0 +1,14 @@
+D:\图书馆管理\LibraryManage\LibraryDAL\bin\Debug\LibraryDAL.dll
+D:\图书馆管理\LibraryManage\LibraryDAL\bin\Debug\LibraryDAL.pdb
+D:\图书馆管理\LibraryManage\LibraryDAL\bin\Debug\LibraryModel.dll
+D:\图书馆管理\LibraryManage\LibraryDAL\bin\Debug\LibraryModel.pdb
+D:\图书馆管理\LibraryManage\LibraryDAL\obj\Debug\LibraryDAL.csprojResolveAssemblyReference.cache
+D:\图书馆管理\LibraryManage\LibraryDAL\obj\Debug\LibraryDAL.dll
+D:\图书馆管理\LibraryManage\LibraryDAL\obj\Debug\LibraryDAL.pdb
+D:\宋海平\项目\LibraryManage\LibraryDAL\bin\Debug\LibraryDAL.dll
+D:\宋海平\项目\LibraryManage\LibraryDAL\bin\Debug\LibraryDAL.pdb
+D:\宋海平\项目\LibraryManage\LibraryDAL\bin\Debug\LibraryModel.dll
+D:\宋海平\项目\LibraryManage\LibraryDAL\bin\Debug\LibraryModel.pdb
+D:\宋海平\项目\LibraryManage\LibraryDAL\obj\Debug\LibraryDAL.csprojResolveAssemblyReference.cache
+D:\宋海平\项目\LibraryManage\LibraryDAL\obj\Debug\LibraryDAL.dll
+D:\宋海平\项目\LibraryManage\LibraryDAL\obj\Debug\LibraryDAL.pdb

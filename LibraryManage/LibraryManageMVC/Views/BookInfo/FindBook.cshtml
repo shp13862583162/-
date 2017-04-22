@@ -1,0 +1,83 @@
+﻿
+@{
+    ViewBag.Title = "FindBook";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    #FindBookCon{
+        width:80%;
+        margin-left:10%;
+    }
+</style>
+
+<div id="FindBookCon">
+    <br />
+    <br/>
+    <div class="layui-form-item">
+        <label class="layui-form-label">书籍名称</label>
+        <div class="layui-input-block">
+            <input id="BookName" type="text" lay-verify="title" autocomplete="off" placeholder="请输入书籍名称" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">作者姓名</label>
+        <div class="layui-input-block">
+            <input id="WriterName" type="text" lay-verify="title" autocomplete="off" placeholder="请输入作者姓名" class="layui-input">
+        </div>
+    </div>
+    <div>
+        <input id="find" class="layui-btn layui-btn-normal" value="搜索" />
+    </div>
+    <table id="Findbooktable" class="layui-table" lay-skin="line">
+        <thead>
+            <tr>
+                <th>书籍id</th>
+                <th>书籍名称</th>
+                <th>作者</th>
+                <th>作者编号</th>
+                <th>书籍简介</th>
+                <th>点击数</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<script>
+    $("#find").click(function () {
+        if ($("#BookName").val() == "" && $("#WriterName").val()==""){
+            alert("至少有一个搜索条件！");
+            return;
+        }
+        $.post("/BookInfo/FindBookList",
+            {
+                bookName: $("#BookName").val(),
+                writer: $("#WriterName").val()
+            },
+            function (data) {
+                if (data.List != null) {
+                    var str = "";
+                    for (var i = 0; i < data.List.length; i++) {
+                        str += "<tr>";
+                        str += "<td>" + data.List[i].BBookID + "</td>";
+                        str += "<td class='bookclassa' myid='" + data.List[i].BBookID + "'>" + data.List[i].BName + "</td>";
+                        str += "<td>" + data.List[i].Writer + "</td>";
+                        str += "<td>" + data.List[i].WriterID + "</td>";
+                        str += "<td>" + data.List[i].BIntroduction + "</td>";
+                        str += "<td>" + data.List[i].BVisitCount + "</td>";
+                        str += "</tr>";
+                    }
+                    $("#Findbooktable tbody").html(str);
+                }
+        })
+    });
+    $(document).on("click", ".bookclassa", function () {
+        bookid = $(this).attr("myid");
+        $.post("/BookInfo/UpdateVisisNum", { bookid: bookid }, function (data) {
+            if (data.IsSuccess) {
+
+            }
+        });
+        window.open("/BookInfo/BookDetail?bookid=" + bookid);
+    });
+</script>

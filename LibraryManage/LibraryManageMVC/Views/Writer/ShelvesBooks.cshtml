@@ -1,0 +1,89 @@
+﻿
+@{
+    ViewBag.Title = "ShelvesBooks";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@*<h2>ShelvesBooks</h2>*@
+
+<div id="ShelvesBookList">
+    <table id="table" class="layui-table" lay-skin="line">
+        <colgroup>
+            <col width="150">
+            <col width="300">
+            <col width="300">
+            <col>
+        </colgroup>
+        <thead>
+            <tr>
+                <th>书籍ID</th>
+                <th>书籍名称</th>
+                <th>书籍申请者ID</th>
+                <th>书籍申请者</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <div id="demoPage"></div>
+</div>
+<script>
+
+    $(function(){
+        FindDataAndPage(1,10);
+    });
+    layui.use(['laypage', 'layer'], function(){
+        var laypage = layui.laypage
+        ,layer = layui.layer;
+
+        //调用分页
+        laypage({
+            cont: 'demoPage' //分页容器的id
+            ,pages: Math.ceil(total/10) //总页数
+            ,skin: '#5FB878' //自定义选中色值
+            //,skip: true //开启跳页
+            ,jump: function(obj, first){
+                if(!first){
+                    layer.msg('第'+ obj.curr +'页');
+                    FindDataAndPage(obj.curr,10);
+                }
+            }
+        });
+
+    });
+    var total = 0 ;
+    function FindDataAndPage(pageindex,pagesize){
+        $.post("/Writer/GetShelvesBooks",
+            {
+                account: @UserEntity.Account,
+                PageIndex: pageindex,
+                PageSize: pagesize
+            }
+            ,function(data){
+                total= data.Total;
+                list= data.List ;
+                var str = "";
+                for(var i = 0;i<list.length;i++)
+                {
+                    str += "<tr>";
+                    str += "<td>"+list[i].BBookID+"</td>";
+                    str += "<td>"+list[i].BName+"</td>";
+                    str += "<td>"+list[i].WriterID+"</td>";
+                    str += "<td>"+list[i].Writer+"</td>";
+                    str += "<td><a class='operations' onclick='operations(this)' myid='"+list[i].BBookID+"'>编辑</a></td>";
+                    str += "</tr>";
+                }
+                if(list==null&&list.length<=0){
+                    str += "<tr><td colspan='"+list.Count+"'>无数据</td></tr>";
+                }
+                $("#table tbody").html(str);
+            });
+    }
+    $("#find").click(function(){
+        FindDataAndPage(1,10);
+    });
+    function operations(obj){
+        myid = $(obj).attr("myid");
+        window.open("/Writer/WriterAddChapter?bookid="+myid);
+    }
+</script>
