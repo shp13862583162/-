@@ -16,7 +16,7 @@ namespace LibraryDAL
     /// </summary>
     public class BookDAL
     {
-        string dbname = "mytesta";
+        string dbname = "mytest";
         /// <summary>
         /// 根据数据类型ID查取类型名称
         /// </summary>
