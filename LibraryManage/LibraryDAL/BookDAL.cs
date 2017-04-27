@@ -485,6 +485,44 @@ namespace LibraryDAL
             return table;
         }
         /// <summary>
+        /// 更新推荐表
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public int UpdateRecommend(Recommend model)
+        {
+            List<SqlParameter> paras = new List<SqlParameter>();
+            string sql = @"  
+                           UPDATE [dbo].[Recommend]
+                                SET [BookId] = @BookId
+                           WHERE  IsValid= 0 and IsDeleted = 0 and ID = @ID
+                        ";
+            if (model.ID != 0)
+            {
+                paras.Add(new SqlParameter("@ID", SqlDbType.BigInt) { Value = model.ID });
+            }
+            if (model.BookId != 0)
+            {
+                paras.Add(new SqlParameter("@BookId", SqlDbType.BigInt) { Value = model.BookId });
+            }
+            int result = CommonMethod.UpdateData(sql.ToString(), paras.ToArray(), dbname);
+            return result;
+        }
+        /// <summary>
+        /// 获取Recommenddata
+        /// </summary>
+        /// <returns></returns>
+        public DataTable SelectRecommenddata()
+        {
+            List<SqlParameter> paras = new List<SqlParameter>();
+            string sql = @"  
+                           select top 8 * from [dbo].[Recommend]
+                           WHERE  IsValid= 0 and IsDeleted = 0 
+                        ";
+            DataTable table = CommonMethod.SelectData(sql.ToString(), paras.ToArray(), dbname);
+            return table;
+        }
+        /// <summary>
         /// 获取书籍的章节
         /// </summary>
         /// <param name="bookid"></param>

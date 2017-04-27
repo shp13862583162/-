@@ -124,6 +124,14 @@ namespace LibraryManageMVC.Controllers
             return View();
         }
         /// <summary>
+        /// 主编推荐编辑界面
+        /// </summary>
+        /// <returns></returns>
+        public ViewResult RecommendList()
+        {
+            return View();
+        }
+        /// <summary>
         /// 查询 作者封杀 数据
         /// </summary>
         /// <param name="account"></param>
@@ -266,7 +274,43 @@ namespace LibraryManageMVC.Controllers
             }
             model.UseStatue = 1;
             IsSuccess = bll.BanUpdate(model);
-            return Json(IsSuccess, JsonRequestBehavior.DenyGet);
+            return Json(IsSuccess, JsonRequestBehavior.DenyGet); 
         }
+        /// <summary>
+        /// 更新主编推荐表
+        /// </summary>
+        /// <param name="bookid"></param>
+        /// <param name="myid"></param>
+        /// <returns></returns>
+        public JsonResult UpdateRecommend(string bookid, string myid)
+        {
+            BookBLL bbll = new BookBLL();
+            Recommend model = new Recommend();
+            bool IsSuccess = false;
+            if (!string.IsNullOrWhiteSpace(bookid))
+            {
+                model.BookId = Int64.Parse(bookid);
+            }
+            if (!string.IsNullOrWhiteSpace(myid))
+            {
+                model.ID = Int64.Parse(myid);
+            }
+            IsSuccess = bbll.UpdateRecommend(model);
+
+            return Json(IsSuccess, JsonRequestBehavior.DenyGet);
+
+        }
+        /// <summary>
+        /// 获取推荐表
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult SelectRecommenddata()
+        {
+            BookBLL bbll = new BookBLL();
+            List<Recommend> list = new List<Recommend>();
+            list = bbll.SelectRecommenddata();
+            return Json(list, JsonRequestBehavior.DenyGet);
+        }
+
     }
 }

@@ -213,16 +213,42 @@ namespace LibraryBLL
             return list;
         }
         /// <summary>
-        /// 获取书籍的章节
+        /// 更新推荐表
         /// </summary>
-        /// <param name="bookid"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
-        //public List<ChapterModel> FindChapter(long bookid)
-        //{
-        //    List<ChapterModel> list = new List<ChapterModel>();
-        //    DataTable table = dal.FindChapter(bookid);
-        //    list =  Common.TableToList<ChapterModel>(table);
-        //    return list;
-        //}
-    }
+        public bool UpdateRecommend(Recommend model)
+        {
+            int result = dal.UpdateRecommend(model);
+            if (result > 0)
+            {
+                return true;
+            }
+            return false;
+
+        }
+        /// <summary>
+        /// 获取Recommenddata
+        /// </summary>
+        /// <returns></returns>
+        public List<Recommend> SelectRecommenddata()
+        {
+            DataTable table = dal.SelectRecommenddata();
+            List<Recommend> list = new List<Recommend>();
+            list = Common.TableToList<Recommend>(table);
+            return list;
+        }
+            /// <summary>
+            /// 获取书籍的章节
+            /// </summary>
+            /// <param name="bookid"></param>
+            /// <returns></returns>
+            //public List<ChapterModel> FindChapter(long bookid)
+            //{
+            //    List<ChapterModel> list = new List<ChapterModel>();
+            //    DataTable table = dal.FindChapter(bookid);
+            //    list =  Common.TableToList<ChapterModel>(table);
+            //    return list;
+            //}
+        }
 }

@@ -1,0 +1,141 @@
+﻿
+@{
+    ViewBag.Title = "RecommendList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    h2{
+        font-size:2em;
+    }
+    .Recommenddiv{
+        width:80%;
+        margin-left:10%;
+    }
+</style>
+
+<h2>主编推荐编辑</h2>
+<br />
+<br/>
+<div class="Recommenddiv">
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">第一推荐</label>
+            <div class="layui-input-block">
+                <input myid="1" type="text" id="Recommend1" placeholder="输入书籍id" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <input type="button" id="Update1" class="Update layui-btn layui-btn-normal" value="更新" />
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">第二推荐</label>
+            <div class="layui-input-block">
+                <input myid="2" type="text" id="Recommend2" placeholder="输入书籍id" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <input type="button" id="Update2" class="Update layui-btn layui-btn-normal" value="更新" />
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">第三推荐</label>
+            <div class="layui-input-block">
+                <input myid="3" type="text" id="Recommend3" placeholder="输入书籍id" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <input type="button" id="Update3" class="Update layui-btn layui-btn-normal" value="更新" />
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">第四推荐</label>
+            <div class="layui-input-block">
+                <input myid="4" type="text" id="Recommend4" placeholder="输入书籍id" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <input type="button" id="Update4" class="Update layui-btn layui-btn-normal" value="更新" />
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">第五推荐</label>
+            <div class="layui-input-block">
+                <input myid="6" type="text" id="Recommend5" placeholder="输入书籍id" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <input type="button" id="Update5" class="Update layui-btn layui-btn-normal" value="更新" />
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">第六推荐</label>
+            <div class="layui-input-block">
+                <input myid="7" type="text" id="Recommend6" placeholder="输入书籍id" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <input  type="button" id="Update6" class="Update layui-btn layui-btn-normal" value="更新" />
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">第七推荐</label>
+            <div class="layui-input-block">
+                <input myid="8" type="text" id="Recommend7" placeholder="输入书籍id" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <input type="button" id="Update7" class="Update layui-btn layui-btn-normal" value="更新" />
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">第八推荐</label>
+            <div class="layui-input-block">
+                <input myid="9" type="text" id="Recommend8" placeholder="输入书籍id" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <input type="button" id="Update8" class="Update layui-btn layui-btn-normal" value="更新" />
+        </div>
+    </div>
+
+</div>
+<script>
+    $(function () {
+        $.post("/Admin/SelectRecommenddata",
+            {},
+            function (data) {
+                for (var i = 1; i <= 8; i++) {
+                    $("#Recommend" + i).val(data[i-1].BookId)
+                }
+            });
+        
+
+        $(".Update" ).click(function () {
+            var bookid = $(this).parent().parent().children("div").children("div").children("input").val();
+            var myid = $(this).parent().parent().children("div").children("div").children("input").attr("myid");
+            $.post("/Admin/UpdateRecommend",
+            {
+                bookid: bookid,
+                myid: myid
+            },
+            function (data) {
+                if (data) {
+                    alert("更新成功！")
+                } else {
+                    alert("更新失败！")
+                }
+            })
+        });
+
+    });
+
+    
+</script>

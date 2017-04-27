@@ -6,3 +6,4 @@ D:\宋海平\项目\LibraryManage\LibraryModel\bin\Debug\LibraryModel.dll
 D:\宋海平\项目\LibraryManage\LibraryModel\bin\Debug\LibraryModel.pdb
 D:\宋海平\项目\LibraryManage\LibraryModel\obj\Debug\LibraryModel.dll
 D:\宋海平\项目\LibraryManage\LibraryModel\obj\Debug\LibraryModel.pdb
+D:\宋海平\项目\LibraryManage\LibraryModel\obj\Debug\LibraryModel.csprojResolveAssemblyReference.cache

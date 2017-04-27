@@ -257,6 +257,7 @@
     <Content Include="Views\Writer\WriterAddChapter.cshtml" />
     <Content Include="Views\Writer\AddChapter.cshtml" />
     <Content Include="Views\BookInfo\FindBook.cshtml" />
+    <Content Include="Views\Admin\RecommendList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

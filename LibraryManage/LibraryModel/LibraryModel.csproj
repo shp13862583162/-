@@ -46,6 +46,7 @@
     <Compile Include="Book\ChapterModel.cs" />
     <Compile Include="Book\CommentModel.cs" />
     <Compile Include="Book\PageDataModel.cs" />
+    <Compile Include="Book\Recommend.cs" />
     <Compile Include="PageModel.cs" />
     <Compile Include="User\CollectionModel.cs" />
     <Compile Include="User\LoginInfoModel.cs" />
