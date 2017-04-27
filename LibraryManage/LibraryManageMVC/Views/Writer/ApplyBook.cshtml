@@ -7,9 +7,13 @@
     #apply {
         margin-left: 10%;
     }
+    
 </style>
-<h2>ApplyBook</h2>
-<form class="layui-form" action="">
+
+<script src="/Scripts/jquery.form.js" type="text/javascript"></script>
+
+<h2>书籍申请</h2>
+<form id="myform" class="layui-form" onsubmit="return yanz();" action="/Writer/ApplyABook"  method="post" enctype="multipart/form-data">
     <div class="layui-form-item">
         <div class="layui-inline">
             <label class="layui-form-label">书籍名称</label>
@@ -34,11 +38,17 @@
             <input id="Introduction" type="text" name="Introduction" class="layui-input">
         </div>
     </div>
-
+    <div class="layui-form-item">
+        <label class="layui-form-label">书籍照片</label>
+        <div class="layui-input-inline imgdiv">
+            <input id="upImg" type="file" name="upImg" class="layui-input">
+        </div>
+    </div>
     <div>
-        <input id="apply" type="button" class="layui-btn layui-btn-normal" value="开始申请" />
+        <input id="apply" type="submit" class="layui-btn layui-btn-normal" value="开始申请" />
     </div>
 </form>
+<script src="~/Scripts/jquery-form.js"></script>
 <script>
     layui.use(['form', 'layedit', 'laydate'], function () {
         var form = layui.form()
@@ -56,6 +66,21 @@
                 }
             });
     });
+    function yanz() {
+        var picname = document.getElementById("upImg").value;
+        if (picname == "")
+        { alert("请上传图片"); return false; }
+        else
+        {
+            if (!/\.(gif|jpg|jpeg|png|GIF|JPG|PNG)$/.test(picname))
+            {
+                alert("图片类型必须是.gif,jpeg,jpg,png中的一种")
+                return false;
+            }
+        }
+        return true;
+    }
+
     function BookTypeToOption(list) {
         var str = "";
         for (var i = 0 ; i < list.length; i++) {
@@ -63,19 +88,26 @@
         }
         $("#BookType").html(str);
     }
-    $("#apply").click(function () {
-        $.post("/Writer/ApplyABook",
-            {
-                BookName: $("#BookName").val(),
-                Introduction: $("#Introduction").val(),
-                BookType: $("#BookType option:selected").val()
-            },
-            function (data) {
-                if (data.IsSuccess) {
-                    alert("开始申请书籍！");
-                } else {
-                    alert("申请书籍失败！");
-                }
-            })
-    });
+    //$("#myform").ajaxSubmit(function (message) {
+    //    if (message.IsSuccess) {
+    //        alert("开始申请书籍！");
+    //    } else {
+    //        alert("申请书籍失败！");
+    //    }
+    //});
+    //$("#apply").click(function () {
+    //    $.post("/Writer/ApplyABook",
+    //        {
+    //            BookName: $("#BookName").val(),
+    //            Introduction: $("#Introduction").val(),
+    //            BookType: $("#BookType option:selected").val()
+    //        },
+    //        function (data) {
+    //            if (data.IsSuccess) {
+    //                alert("开始申请书籍！");
+    //            } else {
+    //                alert("申请书籍失败！");
+    //            }
+    //        })
+    //});
 </script>

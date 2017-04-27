@@ -3,6 +3,7 @@ using LibraryModel.Book;
 using LibraryModel.User;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -147,8 +148,23 @@ namespace LibraryManageMVC.Controllers
         /// <param name="BookName"></param>
         /// <param name="Introduction"></param>
         /// <returns></returns>
-        public JsonResult ApplyABook(string BookName,string Introduction,string BookType)
+        public ActionResult ApplyABook(HttpPostedFileBase upImg,string BookName,string Introduction,string BookType)
         {
+            string fileName = System.IO.Path.GetFileName(upImg.FileName);
+            string filePhysicalPath = Server.MapPath("~/upload/"+ LoginUser.Account.ToString() + "/" + fileName);
+            string pic = "", error = "";
+            try
+            {
+                string myfilename = Server.MapPath("~/upload/" + LoginUser.Account.ToString());    //组合路径  
+                Directory.CreateDirectory(myfilename);
+                upImg.SaveAs(filePhysicalPath);
+                pic = "~/upload/"+ LoginUser.Account.ToString() + "/" + fileName;
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+            }
+           
             bool issuccess = false;
             BookModel model = new BookModel();
             if (!string.IsNullOrWhiteSpace(BookName))
@@ -163,12 +179,26 @@ namespace LibraryManageMVC.Controllers
             {
                 model.BTypeID = Int32.Parse(BookType);
             }
+            model.PictureUrl = pic;
             model.Writer = LoginUser.Name;
             model.WriterID = LoginUser.Account;
             model.ApplyTime = DateTime.Now;
             issuccess = bll.AddBook(model);
 
-            return Json(new { IsSuccess = issuccess, JsonRequestBehavior.DenyGet });
+            if (issuccess)
+            {
+                return Content("<script>alert('开始申请')</script>");
+            }else
+            {
+                return Content("<script>alert('申请失败')</script>");
+            }
+            //return Json(new
+            //{
+            //    IsSuccess = issuccess,
+            //    pic = pic,
+            //    error = error,
+            //    JsonRequestBehavior.DenyGet
+            //});
         }
         /// <summary>
         /// 获取所有的有效的书籍类型

@@ -28,9 +28,12 @@
 <div class="contain">
     <span class="myChpName">@Model.BName</span>
     <fieldset class="layui-elem-field">
+        <img style="float:left;margin: 1% 0 1% 2%" width="130" height="170" src="@Url.Content(Model.PictureUrl)" alt="images" />
+
         <legend>@Model.BName</legend>
-        <div class="layui-field-box">
-            <span>作者：</span>
+        <div  style="float:left;margin:2%;" class="layui-field-box">
+            <span>作者：@Model.Writer</span>
+            <br />
             简介：
             @Model.BIntroduction
         </div>

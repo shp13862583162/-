@@ -106,9 +106,9 @@ namespace LibraryDAL
                 sqlwhere += " and b.BStatue != 2 ";
             }
             sql = string.Format(@"
-                    select top {0} BBookID,BName,BTypeID,WriterID,Writer,BStatue
+                    select top {0} BBookID,BName,BTypeID,WriterID,Writer,BStatue,ApplyTime
                         from
-                        (select  Row_Number() over (order by  b.BBookID asc ) as number , b.BBookID,b.BName,b.BTypeID,b.WriterID,b.Writer,b.BStatue
+                        (select  Row_Number() over (order by  b.BBookID asc ) as number ,b.ApplyTime, b.BBookID,b.BName,b.BTypeID,b.WriterID,b.Writer,b.BStatue
                         from mytest.dbo.Book b WITH(NOLOCK) 
                         left join mytest.dbo.UserInfo  u WITH(NOLOCK)   on b.WriterID= u.Account
                         where  u.UseStatue!=3 and b.IsValid = 0 and b.IsDeleted = 0 and u.IsValid = 0 and u.IsDeleted =0 {1})as temp
@@ -133,6 +133,7 @@ namespace LibraryDAL
             build.Append(@"INSERT INTO [dbo].[Book]
            ([BBookID]
            ,[BName]
+            ,[PictureUrl]
            ,[WriterID]
            ,[Writer]
            ,[BTypeID]
@@ -143,7 +144,7 @@ namespace LibraryDAL
            ,[IsValid]
            ,[IsDeleted])
      VALUES
-            (@BBookID,@BName,@WriterID,@Writer,@BTypeID,@BIntroduction,0,1,@ApplyTime,0,0)
+            (@BBookID,@BName,@PictureUrl,@WriterID,@Writer,@BTypeID,@BIntroduction,0,1,@ApplyTime,0,0)
 ");
             if (model.BBookID != 0)
             {
@@ -152,6 +153,10 @@ namespace LibraryDAL
             if (!string.IsNullOrWhiteSpace(model.BName))
             {
                 paras.Add(new SqlParameter("@BName", SqlDbType.NVarChar) { Value = model.BName });
+            }
+            if (!string.IsNullOrWhiteSpace(model.PictureUrl))
+            {
+                paras.Add(new SqlParameter("@PictureUrl", SqlDbType.NVarChar) { Value = model.PictureUrl });
             }
             if (model.WriterID != 0)
             {

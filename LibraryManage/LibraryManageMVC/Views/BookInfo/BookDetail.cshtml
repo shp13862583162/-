@@ -7,32 +7,40 @@
 @model LibraryModel.Book.BookModel
 
 <style>
-    .contain{
-        width:80%;
-        margin-left:10%;
+    .contain {
+        width: 80%;
+        margin-left: 10%;
     }
-    .myChpName{
-         font-size:3em;
-        font-family:Microsoft YaHei   \5FAE\8F6F\96C5\9ED1;
-        margin-left:40%;
+
+    .myChpName {
+        font-size: 3em;
+        font-family: Microsoft YaHei \5FAE\8F6F\96C5\9ED1;
+        margin-left: 40%;
     }
-    #listid{
-        font-size:2em;
-        font-family:Microsoft YaHei   \5FAE\8F6F\96C5\9ED1;
+
+    #listid {
+        font-size: 2em;
+        font-family: Microsoft YaHei \5FAE\8F6F\96C5\9ED1;
     }
 </style>
 <input type="hidden" id="bookid" value="@Model.BBookID" />
 <input type="hidden" id="WriterID" value="@Model.WriterID" />
 <div class="contain">
     <span class="myChpName">@Model.BName</span>
-    <fieldset class="layui-elem-field">
-        <legend>@Model.BName</legend>
-        <div class="layui-field-box">
-            <span>作者：</span>
-            简介：
-            @Model.BIntroduction
-        </div>
-    </fieldset>
+    <div>
+        <fieldset class="layui-elem-field">
+            <img style="float:left;margin: 1% 0 1% 2%" width="130" height="170" src="@Url.Content(Model.PictureUrl)" alt="images" />
+
+            <legend>@Model.BName</legend>
+            <div style="float:left;margin:2%;" class="layui-field-box">
+                <span>作者：@Model.Writer</span>
+                <br />
+                简介：
+                @Model.BIntroduction
+            </div>
+        </fieldset>
+    </div>
+   
 
     <div>
         <a id="listid">查看目录</a>
@@ -80,13 +88,12 @@
     </fieldset>
     <div class="layui-collapse CommentArea" lay-filter="test">
     </div>
+    
     <div>
         <input id="LookMore" class="layui-btn layui-btn-normal" type="button" value="查看更多" />
     </div>
 </div>
 <script>
-    var element  ;
-    var layer ;
     var bookid=@bookid;
     var dianjinum = 1;
     $(function(){
@@ -97,43 +104,45 @@
                 }
             }
         });
-        CommentArea(1,20,true);
+        //CommentArea(1,20,true);
     });
-    function CommentArea(pageindex,pagesize,render){
-        $.post("/BookInfo/FindComment",
-            {
-                bookid:bookid,
-                pageindex:pageindex,
-                pagesize:pagesize
-            },
-            function(Data){
-                dianjinum +=1;
-                if(Data!=null){
-                    if(Data.List!=null){
-                    var str = "";
-                    for(var i=0;i<Data.List.length;i++){
-                        str += " <div class='layui-colla-item'><h2 class='layui-colla-title'>来自账号"+Data.List[i].ACCount+"的点评</h2> <div class='layui-colla-content'> <p>"+Data.List[i].BContent+"</p><br/><p>点评时间："+data_string_Date(Data.List[i].CTime).FormatStr("yyyy-MM-dd")+"</p></div></div>";
+    layui.use(['element', 'layer'], function(){
+        var element = layui.element();
+        var layer = layui.layer;
+        function CommentArea(pageindex,pagesize,render){
+            $.post("/BookInfo/FindComment",
+                {
+                    bookid:bookid,
+                    pageindex:pageindex,
+                    pagesize:pagesize
+                },
+                function(Data){
+                    delete element;
+                    if((Data.Num/10 + 1)<dianjinum){
+                        alert("已经是全部点评了！");
+                        return;
                     }
-                    $(".CommentArea").append(str);
-                    if(render){
-                        layui.use(['element', 'layer'], function(){
-                            //element = layui.element();
-                            //layer = layui.layer;
-  
-                            //监听折叠
-                            //element.on('collapse(test)', function(data){
-                            //    //layer.msg('展开状态：'+ data.show);
-                            //});
-                        });
+                    if(Data!=null){
+                        if(Data.List!=null){
+                            var str = "";
+                            for(var i=0;i<Data.List.length;i++){
+                                str += " <div class='layui-colla-item'><h2 class='layui-colla-title'>来自账号"+Data.List[i].ACCount+"的点评</h2> <div class='layui-colla-content'> <p>"+Data.List[i].BContent+"</p><br/><p>点评时间："+data_string_Date(Data.List[i].CTime).FormatStr("yyyy-MM-dd")+"</p></div></div>";
+                            }
+                            $(".CommentArea").append(str);
+                               
+                            if(render){
+                            }
+                        }
+                        element.init();
                     }
-                }
-            }
+                    dianjinum +=1;
+                });
+        }
+        $("#LookMore").click(function(){
+            CommentArea(dianjinum,10,false);
         });
-    }
-    $("#LookMore").click(function(){
-        alert(dianjinum);
-        CommentArea(dianjinum,20,false);
     });
+
     $("#tsbtn").click(function(){
         $(".Reportdiv").css("display","block");
     });

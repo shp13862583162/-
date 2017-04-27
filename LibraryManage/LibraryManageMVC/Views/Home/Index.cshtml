@@ -2,7 +2,7 @@
     ViewBag.Title = "Home Page";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@model LibraryModel.Book.BookModel
+@model LibraryModel.Book.PageDataModel
 <link href="~/CSS/IndexCSS.css" rel="stylesheet" />
 
 <br />
@@ -18,6 +18,7 @@
            @Html.Typetable();
         </table>
     </div>
+    <br />
     <div id="booktypeRank">
         <label >各类排行榜</label>
         <table id="booktypetable"  class="layui-table" lay-even="" lay-skin="row">
@@ -32,8 +33,14 @@
     </div>
     <div id="Recommend">
         <label>站长推荐</label>
-        <table id="Recommendtable"> 
-        </table>
+        <br/>
+        @foreach (var book in Model.list)
+        {
+            <div>
+                <img class="imgclass" myimgid="@book.BBookID" style="float:left;margin: 1% 0 1% 2%" width="130" title="@book.BName" height="170" src="@Url.Content(@book.PictureUrl)" alt="images" />
+            </div>
+        }
+
     </div>
 </div>
 <div id="asas"></div>
@@ -75,7 +82,15 @@
             });
        
     });
-    
+    $(document).on("click", ".imgclass", function () {
+        abookid = $(this).attr("myimgid");
+        $.post("/BookInfo/UpdateVisisNum", { bookid: abookid }, function (data) {
+            if (data.IsSuccess) {
+
+            }
+        });
+        window.open("/BookInfo/BookDetail?bookid=" + abookid);
+    });
     $(document).on("click", ".bookclassa", function () {
         bookid = $(this).attr("myid");
         $.post("/BookInfo/UpdateVisisNum", { bookid: bookid }, function (data) {

@@ -19,9 +19,21 @@ namespace LibraryManageMVC.Controllers
         }
         public ActionResult Index()
         {
+            BookBLL bbll = new BookBLL();
             int level = 1;
             ViewBag.level = level;
-            return View();
+            List<BookModel> list = new List<BookModel>();
+            list = bbll.FindRecommend();
+            for(int i = 0; i < list.Count; i++)
+            {
+                if (string.IsNullOrWhiteSpace(list[i].PictureUrl))
+                {
+                    list[i].PictureUrl = "~/upload/Default/0.jpg";
+                }
+            }
+            PageDataModel model = new PageDataModel();
+            model.list = list;
+            return View(model);
         }
        /// <summary>
        /// 获取缓存的数据 

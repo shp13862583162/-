@@ -27,7 +27,10 @@ namespace LibraryManageMVC.Controllers
             {
                 model = bll.SelectDetail(Int64.Parse(bookid));
             }
-
+            if (string.IsNullOrWhiteSpace(model.PictureUrl))
+            {
+                model.PictureUrl = "~/upload/Default/0.jpg";
+            }
             return View(model);
         }
         /// <summary>
@@ -215,8 +218,9 @@ namespace LibraryManageMVC.Controllers
                 long Bookid = Int64.Parse(bookid);
                 int Pageindex = Int32.Parse(pageindex);
                 int Pagesize = Int32.Parse(pagesize);
-                List<CommentModel> list = bll.FindComment(Bookid, Pageindex, Pagesize);
-                return Json(new {Message="获取成功！", List = list }, JsonRequestBehavior.DenyGet);
+                int num = 0;
+                List<CommentModel> list = bll.FindComment(Bookid, Pageindex, Pagesize,out num);
+                return Json(new {Message="获取成功！", List = list ,Num=num}, JsonRequestBehavior.DenyGet);
             }
             return Json(new { Message = "获取失败！" }, JsonRequestBehavior.DenyGet);
         }

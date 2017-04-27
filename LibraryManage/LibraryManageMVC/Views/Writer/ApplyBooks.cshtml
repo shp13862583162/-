@@ -85,7 +85,7 @@
 
 <script>
     $(function(){
-        FindDataAndPage(1,10);
+        //FindDataAndPage(1,10);
     });
     layui.use(['form','laypage', 'layer','laydate'], function(){
         var laypage = layui.laypage
@@ -93,66 +93,68 @@
         ,layer = layui.layer
         ,form = layui.form();
 
-        //调用分页
-        laypage({
-            cont: 'demoPage' //分页容器的id
-            ,pages: Math.ceil(total/10) //总页数
-            ,skin: '#5FB878' //自定义选中色值
-            //,skip: true //开启跳页
-            ,jump: function(obj, first){
-                if(!first){
-                    layer.msg('第'+ obj.curr +'页');
-                    FindDataAndPage(obj.curr,10);
+        function FindDataAndPage(pageindex,pagesize,render){
+            $.post("/Writer/FindApply",
+                {
+                    account: @UserEntity.Account,
+                    bookname:$("#bookname").val(),
+                    startdatetime:$("#startdatetime").val(),
+                    enddatetime:$("#enddatetime").val(),
+                    ApplyStatue:$("#ApplyStatue  option:selected").val(),
+                    PageIndex: pageindex,
+                    PageSize: pagesize
                 }
-            }
+                ,function(data){
+                    total= data.Total;
+                    if (render) {
+                        laypage({
+                            cont: 'demoPage' //分页容器的id
+                , pages: Math.ceil(total / 10) //总页数
+                , skin: '#5FB878' //自定义选中色值
+                            //,skip: true //开启跳页
+                , jump: function (obj, first) {
+                    if (!first) {
+                        layer.msg('第' + obj.curr + '页');
+                        FindDataAndPage(obj.curr, 10, false);
+                    }
+                }
+                        });
+                    }
+                    list= data.List ;
+                    var str = "";
+                    for(var i = 0;i<list.length;i++)
+                    {
+                        var statue = "";
+                        if(list[i].BStatue == 1){
+                            statue = "申请中";
+                        }else  if(list[i].BStatue == 2){
+                            statue = "申请成功";
+                        }else  if(list[i].BStatue == 3){
+                            statue = "申请驳回";
+                        }
+                        str += "<tr>";
+                        str += "<td>"+list[i].BBookID+"</td>";
+                        str += "<td>"+list[i].BName+"</td>";
+                        str += "<td>"+list[i].WriterID+"</td>";
+                        str += "<td>"+list[i].Writer+"</td>";
+                        str += "<td>"+data_string_Date(list[i].ApplyTime).FormatStr("yyyy-MM-dd")+"</td>";
+                        str += "<td>"+statue+"</td>";
+                        str += "<td><a class='operations' onclick='operations(this)' myid='"+list[i].BBookID+"'>操作</a></td>";
+                        str += "</tr>";
+                    }
+                    if(list==null&&list.length<=0){
+                        str += "<tr><td colspan='"+list.Count+"'>无数据</td></tr>";
+                    }
+                    $("#table tbody").html(str);
+                });
+        }
+        $("#find").click(function(){
+            FindDataAndPage(1,10,true);
         });
 
     });
     var total = 0 ;
-    function FindDataAndPage(pageindex,pagesize){
-        $.post("/Writer/FindApply",
-            {
-                account: @UserEntity.Account,
-                bookname:$("#bookname").val(),
-                startdatetime:$("#startdatetime").val(),
-                enddatetime:$("#enddatetime").val(),
-                ApplyStatue:$("#ApplyStatue  option:selected").val(),
-                PageIndex: pageindex,
-                PageSize: pagesize
-            }
-            ,function(data){
-                total= data.Total;
-                list= data.List ;
-                var str = "";
-                for(var i = 0;i<list.length;i++)
-                {
-                    var statue = "";
-                    if(list[i].BStatue == 1){
-                        statue = "申请中";
-                    }else  if(list[i].BStatue == 2){
-                        statue = "申请成功";
-                    }else  if(list[i].BStatue == 3){
-                        statue = "申请驳回";
-                    }
-                    str += "<tr>";
-                    str += "<td>"+list[i].BBookID+"</td>";
-                    str += "<td>"+list[i].BName+"</td>";
-                    str += "<td>"+list[i].WriterID+"</td>";
-                    str += "<td>"+list[i].Writer+"</td>";
-                    str += "<td>"+data_string_Date(list[i].ApplyTime).FormatStr("yyyy-MM-dd")+"</td>";
-                    str += "<td>"+statue+"</td>";
-                    str += "<td><a class='operations' onclick='operations(this)' myid='"+list[i].BBookID+"'>操作</a></td>";
-                    str += "</tr>";
-                }
-                if(list==null&&list.length<=0){
-                    str += "<tr><td colspan='"+list.Count+"'>无数据</td></tr>";
-                }
-                $("#table tbody").html(str);
-            });
-    }
-    $("#find").click(function(){
-        FindDataAndPage(1,10);
-    });
+   
     function operations(obj){
         myid = $(obj).attr("myid");
         alert(myid);

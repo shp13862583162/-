@@ -431,12 +431,17 @@ namespace LibraryDAL
         /// </summary>
         /// <param name="bookid"></param>
         /// <returns></returns>
-        public DataTable FindComment(long bookid,int pageindex,int pagesize)
+        public DataTable FindComment(long bookid,int pageindex,int pagesize,out int num)
         {
             List<SqlParameter> paras = new List<SqlParameter>();
             StringBuilder build = new StringBuilder();
             string wherestr = "";
-            build.Append(@" select top {0} *  from (
+            build.Append(@" 
+                            select count(1) 
+                                from [mytest].[dbo].[Comment] 
+                                where 1=1 AND IsValid = 0 AND IsDeleted = 0 {1} 
+
+                            select top {0} *  from (
                                 SELECT  Row_Number() over (order by  ID asc) as number 
                                  ,[ID]
                                  ,[ACCount]
@@ -455,8 +460,28 @@ namespace LibraryDAL
                 wherestr += " and BookID = @BookID ";
                 paras.Add(new SqlParameter("@BookID", SqlDbType.BigInt) { Value =bookid});
             }
-            string sql = string.Format(build.ToString(), pagesize, build.ToString(), (pageindex - 1) * pagesize);
-            DataTable table = CommonMethod.SelectData(build.ToString(), paras.ToArray(), dbname);
+            string sql = string.Format(build.ToString(), pagesize, wherestr.ToString(), (pageindex - 1) * pagesize);
+            DataTableCollection tables = CommonMethod.GetDataSet(sql.ToString(), paras.ToArray(), dbname);
+            num = Int32.Parse(tables[0].Rows[0][0].ToString());
+            return tables[1];
+        }
+        /// <summary>
+        /// 查询推荐表
+        /// </summary>
+        /// <returns></returns>
+        public DataTable FindRecommend()
+        {
+            List<SqlParameter> paras = new List<SqlParameter>();
+            string sql = @"  
+                            SELECT top 8
+                                  b.BBookID,b.BName,b.PictureUrl
+                              FROM[dbo].[Recommend]
+                                    r
+                             left join[dbo].[Book]
+                                    b on r.BookId = b.BBookID
+                            where r.IsValid= 0 and r.IsDeleted = 0 and b.IsValid= 0 and b.IsDeleted = 0 
+                        ";
+            DataTable table = CommonMethod.SelectData(sql.ToString(), paras.ToArray(), dbname);
             return table;
         }
         /// <summary>

@@ -18,12 +18,18 @@
         font-family: Microsoft YaHei \5FAE\8F6F\96C5\9ED1;
         margin-left:45%
     }
+    .chpcontentname{
+        width:80%;
+        margin-left:10%;
+        height:700px;
+    }
 </style>
 
 <h2 class="topname">章节详情</h2>
 
 <input id="BookID" type="hidden" value="@Model.BookID" />
 <input id="CHID" type="hidden" value="@Model.CHID" />
+<input id="chaptercontent" type="hidden" value="@Model.CHContent" />
 
 <div >
     <div >
@@ -31,10 +37,11 @@
             @Model.CHName
         </span>
     </div>
+    <br />
     <div>
-        <span class="chpcontentname">
-            @Model.CHContent
-        </span>
+        <textarea readonly class="chpcontentname">
+           
+        </textarea>
     </div>
 
     <div style="margin-top:50px;">
@@ -42,6 +49,8 @@
         <input id="next" onclick="next()" style="margin-right:40%;display:inline-block;" class="layui-btn" type="button" value="下一章节" />
     </div>
 </div>
+<br />
+<br />  
 
 <script>
     var cHID = @CHID;
@@ -61,6 +70,8 @@
             $("#next").removeClass("layui-btn-disabled");
             $("#next"),Attr("onclick","next()");
         }
+        var content = $("#chaptercontent").val();
+        $(".chpcontentname").html(content);
     });
     //上一章节
     function Above() {

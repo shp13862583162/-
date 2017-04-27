@@ -104,7 +104,7 @@ namespace System.Web.Mvc
         public static MvcHtmlString SelectBookTable(this HtmlHelper htmlHelper)
         {
             BookBLL bll = new BookBLL();
-            List<BookModel> list = bll.SelectBook();
+            List<BookModel> list = new List<BookModel>();
             list= bll.SelectBook();
             StringBuilder build = new StringBuilder();
           

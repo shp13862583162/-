@@ -29,6 +29,13 @@ namespace LibraryModel.Book
             get; set;
         }
         /// <summary>
+        /// 图片地址
+        /// </summary>
+        public string PictureUrl
+        {
+            get;set;
+        }
+        /// <summary>
         /// 书籍id
         /// </summary>
         public long BBookID

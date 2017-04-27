@@ -194,11 +194,22 @@ namespace LibraryBLL
         /// </summary>
         /// <param name="bookid"></param>
         /// <returns></returns>
-        public List<CommentModel> FindComment(long bookid,int pageindex,int pagesize)
+        public List<CommentModel> FindComment(long bookid,int pageindex,int pagesize,out int num)
         {
-            DataTable table = dal.FindComment(bookid, pageindex, pagesize);
+            DataTable table = dal.FindComment(bookid, pageindex, pagesize,out num);
             List<CommentModel> list = new List<CommentModel>();
             list = Common.TableToList<CommentModel>(table);
+            return list;
+        }
+        /// <summary>
+        /// 获取推荐表
+        /// </summary>
+        /// <returns></returns>
+        public List<BookModel> FindRecommend()
+        {
+            DataTable table =  dal.FindRecommend();
+            List<BookModel> list = new List<BookModel>();
+            list = Common.TableToList<BookModel>(table);
             return list;
         }
         /// <summary>
