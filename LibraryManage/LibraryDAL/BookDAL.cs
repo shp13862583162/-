@@ -226,7 +226,7 @@ namespace LibraryDAL
         {
             int result = 0;
             List<SqlParameter> paras = new List<SqlParameter>();
-            string sql = " insert into mytest.dbo.Collection (BookID,Account,IsValid,IsDeleted) values(@BookID,@Account,0,0)  ";
+            string sql = " insert into mytest.dbo.Collection (BookID,Account,Optime,IsValid,IsDeleted) values(@BookID,@Account,@Optime,0,0)  ";
             if (model.Account != 0)
             {
                 paras.Add(new SqlParameter("@Account", SqlDbType.BigInt) { Value = model.Account });
@@ -235,7 +235,31 @@ namespace LibraryDAL
             {
                 paras.Add(new SqlParameter("@BookID", SqlDbType.BigInt) { Value = model.BookID });
             }
+            paras.Add(new SqlParameter("@Optime", SqlDbType.DateTime) { Value = DateTime.Now });
             return result = CommonMethod.AddData(sql, paras.ToArray(), dbname);
+        }
+        /// <summary>
+        /// 判断是否已经收藏
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public int FindCollect(BookCollectionModel model)
+        {
+            List<SqlParameter> paras = new List<SqlParameter>();
+            string sql = " select count(1) from mytest.dbo.Collection where IsValid = 0 and IsDeleted = 0  ";
+            if (model.Account != 0)
+            {
+                sql += " and Account = @Account";
+                paras.Add(new SqlParameter("@Account", SqlDbType.BigInt) { Value = model.Account });
+            }
+            if (model.BookID != 0)
+            {
+                sql += " and BookID = @BookID";
+                paras.Add(new SqlParameter("@BookID", SqlDbType.BigInt) { Value = model.BookID });
+            }
+            DataTable table = CommonMethod.SelectData(sql, paras.ToArray(), dbname);
+            int result = Int32.Parse(table.Rows[0][0].ToString());
+            return result;
         }
         /// <summary>
         /// 通过点击更新书籍的点击个数

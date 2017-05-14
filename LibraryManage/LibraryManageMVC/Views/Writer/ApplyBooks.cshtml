@@ -75,7 +75,7 @@
                 <th>书籍申请者</th>
                 <th>申请时间</th>
                 <th>申请状态</th>
-                <th>操作</th>
+                @*<th>操作</th>*@
             </tr>
         </thead>
         <tbody></tbody>
@@ -139,7 +139,7 @@
                         str += "<td>"+list[i].Writer+"</td>";
                         str += "<td>"+data_string_Date(list[i].ApplyTime).FormatStr("yyyy-MM-dd")+"</td>";
                         str += "<td>"+statue+"</td>";
-                        str += "<td><a class='operations' onclick='operations(this)' myid='"+list[i].BBookID+"'>操作</a></td>";
+                        //str += "<td><a class='operations' onclick='operations(this)' myid='"+list[i].BBookID+"'>操作</a></td>";
                         str += "</tr>";
                     }
                     if(list==null&&list.length<=0){

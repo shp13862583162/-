@@ -1,87 +1,108 @@
 ﻿
 @{
     ViewBag.Title = "Register";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <style>
+    h2{
+        font-size:2em;
+    }
+    .layui-input{
+        width:237.33px;
+    }
     #Register {
         width: 80%;
         margin-left: 10%;
         text-align: center;
     }
-    .row{
-        margin-top:20px;
+
+    .row {
+        margin-top: 20px;
     }
-    #btndiv{
-         margin-top:20px;
+
+    #btndiv {
+        margin-top: 20px;
     }
-    #tologin{
-        margin-left:30px;
+
+    #tologin {
+        margin-left: 30px;
+    }
+    .layui-unselect layui-form-select{
+        width:207.33px;
     }
 </style>
+<form id="myform" class="layui-form">
 
-<div id="Register">
-    <input id="usertype" name="usertype" type="text" v-model="usertype" >
-    @if (ViewBag.usertype == 1)
-    {
-        <h2>注册</h2>
-    }
-    else if (ViewBag.usertype == 3)
-    {
-        <h2>管理员增加</h2>
-    }
-
-    <hr />
-    <div class="row">
-        <div class="col-xs-3">
-            <label for="username">用户名称：</label>
-            <input type="text" name="username" id="username" placeholder="请输入用户名称" v-model="username">
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-3">
-            <label for="account">手机号码：</label>
-            <input type="text" name="account" id="account" placeholder="请输入手机号码" v-model="useraccount">
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-3">
-            <label for="pwd">用户密码：</label>
-            <input type="text" name="pwd" id="pwd" placeholder="请输入密码" v-model="pwd">
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-3">
-            <label for="usersex">用户性别：</label>
-            <select v-model="selected">
-                <option v-for="option in options" v-bind:value="option.value">
-                    {{ option.text }}
-                </option>
-            </select>
-            <span>Selected: {{ selected }}</span>
-        </div>
-    </div>
-    <div id="btndiv">
+    <div id="Register">
+        <input id="usertype" name="usertype" type="hidden" v-model="usertype">
         @if (ViewBag.usertype == 1)
         {
-            <button class="btn" type="button" v-on:click="addData">注册</button>
-            <a id="tologin" href="/Login/Login">去登录</a>
+            <h2>注册</h2>
         }
         else if (ViewBag.usertype == 3)
         {
-            <button class="btn" type="button" v-on:click="addData" value="增加">增加</button>
+            <h2>管理员增加</h2>
         }
+
+        <hr />
+        <div class="row">
+            <div class="layui-inline">
+                <label for="username">用户名称：</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" name="username" id="username" placeholder="请输入用户名称" v-model="username">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="layui-inline">
+                <label for="account">手机号码：</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" name="account" id="account" placeholder="请输入手机号码" v-model="useraccount">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="layui-inline">
+                <label for="pwd">用户密码：</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" name="pwd" id="pwd" placeholder="请输入密码" v-model="pwd">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="layui-inline">
+                <label for="usersex">用户性别：</label>
+                <div class="layui-input-inline">
+                    <select id="mysex" v-model="selected" class="layui-input">
+                        <option v-for="option in options" v-bind:value="option.value" >{{ option.text }}
+                        </option>
+                    </select>
+                </div>
+                @*<span>Selected: {{ selected }}</span>*@
+            </div>
+        </div>
+        <div id="btndiv">
+            @if (ViewBag.usertype == 1)
+            {
+                <button class="btn layui-btn layui-btn-normal" type="button" v-on:click="addData">注册</button>
+                <a id="tologin" href="/Login/Login">去登录</a>
+            }
+            else if (ViewBag.usertype == 3)
+            {
+                <button class="btn layui-btn layui-btn-normal" type="button" v-on:click="addData" value="增加">增加</button>
+            }
+        </div>
     </div>
-
-</div>
-
-
+</form>
 
 
 
 <script src="~/Scripts/vue.js"></script>
 <script src="~/Scripts/jquery-1.10.2.js"></script>
 <script>
-
+    layui.use(['form', 'layedit', 'laydate'], function () {
+        var form = layui.form()
+    });
 
     new Vue({
         el: '#Register',
@@ -99,7 +120,7 @@
         }, methods: {
             addData: function () {
                 if ($("#usertype").val() != "") {
-                    if ($("#username").val() == "" ||$("#account").val() == "" || $("#pwd").val() == ""||$("#usersex").val() == "" ) {
+                    if ($("#username").val() == "" ||$("#account").val() == "" || $("#pwd").val() == ""||$("#mysex option:selected").val() == "-1" ) {
                         alert("请填满资料！");
                     }
                     else {
@@ -108,7 +129,7 @@
                             username:this.username,
                             account: this.useraccount,
                             pwd: this.pwd,
-                            usersex:this.selected
+                            usersex:$("#mysex option:selected").val()
                         };
                         $.ajax({
                             type: "post",

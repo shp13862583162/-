@@ -121,12 +121,19 @@ namespace LibraryBLL
         /// <returns></returns>
         public bool AddCollection(BookCollectionModel model)
         {
-            int result = dal.AddCollection(model);
-            if (result == 1)
+            int panduan = dal.FindCollect(model);
+            if (panduan > 0)
             {
                 return true;
+            }else
+            {
+                int result = dal.AddCollection(model);
+                if (result == 1)
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
         }
         /// <summary>
         /// 更新浏览数量

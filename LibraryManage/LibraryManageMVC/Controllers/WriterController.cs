@@ -192,13 +192,13 @@ namespace LibraryManageMVC.Controllers
             {
                 return Content("<script>alert('申请失败')</script>");
             }
-            //return Json(new
-            //{
-            //    IsSuccess = issuccess,
-            //    pic = pic,
-            //    error = error,
-            //    JsonRequestBehavior.DenyGet
-            //});
+            return Json(new
+            {
+                IsSuccess = issuccess,
+                pic = pic,
+                error = error,
+                JsonRequestBehavior.DenyGet
+            });
         }
         /// <summary>
         /// 获取所有的有效的书籍类型
@@ -221,6 +221,10 @@ namespace LibraryManageMVC.Controllers
             if (!string.IsNullOrWhiteSpace(bookid))
             {
                 model = bl.SelectDetail(Int64.Parse(bookid));
+            }
+            if (string.IsNullOrWhiteSpace(model.PictureUrl))
+            {
+                model.PictureUrl = "~/upload/Default/0.jpg";
             }
             return View(model);
         }

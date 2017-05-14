@@ -134,7 +134,11 @@
                         else if (list[i].BStatue == 3) {
                             str += "<td>申请被驳回</td>";
                         }
-                        str += "<td><a class='adopt' myadoptid='" + list[i].BBookID + "'>通过</a><a class='reject' myrejectid='" + list[i].BBookID + "'>驳回</a></td>";
+                        if (list[i].BStatue == 1) {
+                            str += "<td><a class='adopt' myadoptid='" + list[i].BBookID + "'>通过</a><a class='reject' myrejectid='" + list[i].BBookID + "'>驳回</a></td>";
+                        } else {
+                            str += "<td>无操作</td>";
+                        }
                         str += "</tr>";
                     }
                     if (list == null && list.length <= 0) {
